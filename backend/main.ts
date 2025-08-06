@@ -3,6 +3,8 @@ import { JSONRPCServer, JSONRPCClient } from "json-rpc-2.0";
 
 const jsonRpcServer = new JSONRPCServer();
 
+jsonRpcServer.addMethod("broadcast", (message: unknown) => {});
+
 const wss = new WebSocketServer({ port: 8080 });
 
 wss.on("connection", (ws) => {
