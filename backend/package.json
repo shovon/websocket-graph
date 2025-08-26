@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "npx -y tsx main.ts"
+    "dev": "npx -y tsx src/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

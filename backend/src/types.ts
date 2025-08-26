@@ -1,10 +1,16 @@
 import { JSONRPCRequest as _JSONRPCRequest, JSONRPCID } from "json-rpc-2.0";
+import WebSocket from "ws";
 import { z } from "zod";
 
 /**
  * A unique identifier associated with a client.
  */
 export type ClientId = string;
+
+/**
+ *
+ */
+export type ClientMapping = Map<ClientId, WebSocket>;
 
 /**
  * The Zod schema that validates a clientId
