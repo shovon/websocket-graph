@@ -1,6 +1,27 @@
 # Graph Relay Architecture
 
-This document outlines an aspirational
+This document outlines an aspirational architecture for a graph relay system.
+
+This document will not outline implementation details. This is left up to the implementers of this architecture design.
+
+More specification, the following is beyond the scope of this document:
+
+- guarantees
+- security
+- performance
+- topology
+- protocols
+- integrity
+
+The purpose of this document was written with the assumptions that:
+
+- network is unreliable.
+- nodes in any network will not act in good faith, and that nodes must negotiate strategies of ensuring integrity.
+- any assumption and assertions come with risk. Assertions are not discouraged, but the nature of this document makes no assertions. Assertions are left entirely up to implementers.
+
+Any other details, such as protocols, shall be discussed in other documents.
+
+Hence why the document uses more "SHOULD" and "MAY", as opposed to "MUST". "MUST" is reserved for reasonable assumptions required for this document to make any sense (for example, the requirement that implementers agree on a protocol format).
 
 ## Terminology
 
@@ -41,9 +62,11 @@ This document outlines an aspirational
    - Clients MAY communicate with non-neighboring nodes through another protocol enveloped by the communication medium, but clients SHOULD NOT communicate directly; they MAY only communicate through a gossip protocol that relays messages from client node to client node.
      - To sketch out a compliant under the requirement of _only_ adjacent client node communication: clients send to server → server validates next hop adjacency → server delivers to the neighbor client, repeat.
    - Client nodes MUST have an identifier
-     - Clients MUST NOT assume their identifier is unique
-       - Client nodes
-     - Servers MUST
+     - Clients MUST NOT assume their identifier is unique in the entire graph.
+     - Clients SHOULD assume that their identifier is unique within its adjacency list.
+       - Clients MAY reject any servers that they connect to that fails to ensure uniqueness within its local adjacency.
+     - Servers SHOULD ensure identifiers are unique at least at the immediate adjacency level, but duplicates MAY exist in the entirety of the graph, as far as node identifier is concerned.
+     - Implementations MAY ensure that identifiers are unique; how uniqueness is enforced, is beyond the scope of this document.
 
 3. **Reachability Guarantees**
 
@@ -54,6 +77,7 @@ This document outlines an aspirational
 
    - The system MUST be real-time.
      - In other words, the system MUST be designed under the assumption that clients and servers react without unreasonable delay.
+       - A strategy to be compliant is to simply use WebSocket, or communicating via UDP
      - Implementers MAY define their own acceptance criteria for what "real-time" and "unreasonable delay" are.
        - Implementers SHOULD define contingencies for delivery guarantees (e.g. sequence numbers for deduplications in environments that implement specifications that implement ARQ).
    - Servers SHOULD ensure that the adjacency list remain tractable.
