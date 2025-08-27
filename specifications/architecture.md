@@ -1,5 +1,7 @@
 # Graph Relay Architecture
 
+This document outlines an aspirational
+
 ## Terminology
 
 - **Server**: The central system that maintains the graph topology and facilitates communication between clients. The server acts as both a connection manager and message router.
@@ -32,11 +34,11 @@
    - The internal graph SHOULD allow every node to be logically reachable from every other node.
    - The server SHOULD ensure that message routing reflects the graph connectivity, regardless of the underlying client–server constraints.
    - The server SHOULD NOT allow client nodes to communicate with non-neighbor nodes.
-   - Clients SHOULD NOT accept messages from non-neighbor client nodes
+   - Clients SHOULD NOT accept messages from non-neighbor client nodes.
      - If a client receives a message from a non-neighbor client node, then it MAY request the server for an updated view of its adjacency.
-       - Servers SHOULD implement
+       - Servers SHOULD implement an endpoint that respects request for receiving the latest state.
    - Clients SHOULD NOT assume that servers store a full historical log of the graph state.
-   - Clients MAY communicate with non-neighbouring nodes through another protocol enveloped by the communication medium, but clients SHOULD NOT communicate directly; they MAY only communicate through a gossip protocol that relays messages from client node to client node.
+   - Clients MAY communicate with non-neighboring nodes through another protocol enveloped by the communication medium, but clients SHOULD NOT communicate directly; they MAY only communicate through a gossip protocol that relays messages from client node to client node.
      - To sketch out a compliant under the requirement of _only_ adjacent client node communication: clients send to server → server validates next hop adjacency → server delivers to the neighbor client, repeat.
    - Client nodes MUST have an identifier
      - Clients MUST NOT assume their identifier is unique
@@ -53,6 +55,7 @@
    - The system MUST be real-time.
      - In other words, the system MUST be designed under the assumption that clients and servers react without unreasonable delay.
      - Implementers MAY define their own acceptance criteria for what "real-time" and "unreasonable delay" are.
+       - Implementers SHOULD define contingencies for delivery guarantees (e.g. sequence numbers for deduplications in environments that implement specifications that implement ARQ).
    - Servers SHOULD ensure that the adjacency list remain tractable.
 
 5. **Persistent connections**
