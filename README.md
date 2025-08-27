@@ -1,4 +1,4 @@
-# Graph Server
+# Graph Relay Architecture
 
 The server maps clients to nodes in a graph. A client MAY have its messages relayed only to clients on adjacent nodes, and SHALL NOT communicate directly with nodes that it is not adjacent to.
 
@@ -28,37 +28,9 @@ The TypeScript type notation is valuable, because the above JSON is just an exam
 
 Now, TypeScript type definitions also lack features to narrow the typeset even more, but so far, as far as the usecases within the scope of this application is concerned, TypeScript types are more than adequate.
 
-This document has been split into several categories:
-
-- architecture
-- specification
-- implementation
-
 ## Specification
 
-### Architecture
-
-1. **Network Layer Topology**
-
-   - The network SHALL conform to a [star topology](https://en.wikipedia.org/wiki/Star_network), where the central hub is the server and each spoke is a client node.
-   - All client communication MUST traverse the server. Direct client-to-client network links are not permitted.
-
-2. **Application Layer Topology**
-
-   - Despite the network-layer star topology, the server SHALL maintain an internal representation of the clients as nodes in a graph.
-   - The internal graph MUST allow every node to be logically reachable from every other node.
-   - The server SHALL ensure that message routing reflects the graph connectivity, regardless of the underlying client–server constraints.
-
-3. **Reachability Guarantees**
-
-   - The server MUST enforce connectivity across all nodes such that, from the perspective of the application, no node is isolated.
-   - Logical communication paths SHALL be preserved even if the underlying network is intermittent or unreliable.
-
-4. **Performance Expectations**
-
-   - Implementers SHOULD be aware of the [Eight Fallacies of Distributed Computing](https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing).
-   - Nevertheless, the system SHALL be designed under the assumption that clients and servers react without undue delay.
-   - Message delivery is expected to be perceived as instantaneous at the application layer, even though the underlying network MAY exhibit latency, jitter, or packet loss.
+Although the architecture is agnostic to the protocol specifications,
 
 ### Debugger endpoint
 
