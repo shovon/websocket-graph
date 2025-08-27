@@ -4,7 +4,7 @@ This document outlines an aspirational architecture for a graph relay system.
 
 This document will not outline implementation details. This is left up to the implementers of this architecture design.
 
-More specification, the following is beyond the scope of this document:
+More specifically, the following is beyond the scope of this document:
 
 - guarantees
 - security
@@ -22,6 +22,8 @@ The purpose of this document was written with the assumptions that:
 Any other details, such as protocols, shall be discussed in other documents.
 
 Hence why the document uses more "SHOULD" and "MAY", as opposed to "MUST". "MUST" is reserved for reasonable assumptions required for this document to make any sense (for example, the requirement that implementers agree on a protocol format).
+
+Potential derivatives of this document MAY introduce more liberal (stricter) assumptions, in spite of the precariousness of malicious nodes, and an unreliable network.
 
 ## Terminology
 

@@ -1,6 +1,10 @@
-# Graph Relay RPC: JSON-RPC 2.0-Based Protocol
+# Graph Relay RPC: JSON-RPC 2.0-Based Protocol in Unreliable Mediums
 
 This document outlines the RPC-based format to work with the the graph relay architecture. However, this document will not outline the implementation details, but rather a blueprint for how implementers should be able to implement the graph, both at the server level, and at the application level.
+
+One possible critique for this protocol is that it assumes more aggressive unreliability, without accounting for environments where unreliability is unacceptable (such as TCP).
+
+Derivatives may omit parts of the format that merely exists to account for unreliability.
 
 ## Server
 
