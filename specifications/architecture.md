@@ -23,7 +23,7 @@ Any other details, such as protocols, shall be discussed in other documents.
 
 Hence why the document uses more "SHOULD" and "MAY", as opposed to "MUST". "MUST" is reserved for reasonable assumptions required for this document to make any sense (for example, the requirement that implementers agree on a protocol format).
 
-Potential derivatives of this document MAY introduce more liberal (stricter) assumptions, in spite of the precariousness of malicious nodes, and an unreliable network.
+Potential derivatives of this document MAY introduce more liberal (stricter) assumptions, in spite of the precariousness of malicious nodes and an unreliable network.
 
 ## Terminology
 
@@ -56,7 +56,7 @@ Potential derivatives of this document MAY introduce more liberal (stricter) ass
    - Despite the star topology in client-server environments, the server SHOULD maintain an internal representation of the clients as nodes in an alternative graph representation (such as a mesh network).
    - The internal graph SHOULD allow every node to be logically reachable from every other node.
    - The server SHOULD ensure that message routing reflects the graph connectivity, regardless of the underlying client–server constraints.
-   - The server SHOULD NOT allow client nodes to communicate with non-neighbor nodes.
+   - The server (through the agreed communication medium) SHOULD NOT allow client nodes to communicate with non-neighbor nodes.
    - Clients SHOULD NOT accept messages from non-neighbor client nodes.
      - If a client receives a message from a non-neighbor client node, then it MAY request the server for an updated view of its adjacency.
        - Servers SHOULD implement an endpoint that respects request for receiving the latest state.
@@ -64,9 +64,9 @@ Potential derivatives of this document MAY introduce more liberal (stricter) ass
    - Clients MAY communicate with non-neighboring nodes through another protocol enveloped by the communication medium, but clients SHOULD NOT communicate directly; they MAY only communicate through a gossip protocol that relays messages from client node to client node.
      - To sketch out a compliant under the requirement of _only_ adjacent client node communication: clients send to server → server validates next hop adjacency → server delivers to the neighbor client, repeat.
    - Client nodes MUST have an identifier
-     - Clients MUST NOT assume their identifier is unique in the entire graph.
+     - Clients SHOULD NOT assume their identifier is unique in the entire graph.
      - Clients SHOULD assume that their identifier is unique within its adjacency list.
-       - Clients MAY reject any servers that they connect to that fails to ensure uniqueness within its local adjacency.
+       - Clients SHOULD reject any servers that they connect to that fails to ensure uniqueness within its local adjacency.
      - Servers SHOULD ensure identifiers are unique at least at the immediate adjacency level, but duplicates MAY exist in the entirety of the graph, as far as node identifier is concerned.
      - Implementations MAY ensure that identifiers are unique; how uniqueness is enforced, is beyond the scope of this document.
 
