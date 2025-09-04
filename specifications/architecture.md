@@ -61,6 +61,7 @@ The server acts as the authoritative maintainer of the graph. It MUST:
 - Handle additions, removals, or modifications of nodes (e.g., due to client disconnections or topology optimizations).
 - Propagate changes to affected clients in a timely manner.
 - Facilitate message relay between neighboring nodes without allowing direct non-neighbor interactions.
+- Ensure each client is assigned a unique ID within its neighborhood
 
 The server SHOULD aim for efficiency in graph maintenance but is not required to optimize for specific metrics like latency or bandwidth.
 

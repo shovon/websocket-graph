@@ -21,12 +21,12 @@ This RFC provides a blueprint for systems requiring adjacency retrieval and mess
   - Input: Entity identifier, optional scope.
   - Output: List of adjacent entities or error.
 - **Send Message**: A method to transmit a message to a specified entity.
-  - Input: Recipient identifier, message payload.
+  - Input: Recipient identifier, message payload. If not recipient identifier, then broadcast
   - Output: Confirmation or error.
 
 ### 3.2 Client Requirements
 
-- **Notify Neighborhood Updates**: A method to receive updates about adjacency changes.
+- **Receive Neighborhood Updates**: A method to receive updates about adjacency changes.
   - Output: Updated adjacency data.
 - **Receive Message**: A method to receive messages from the server.
   - Output: Message payload.
