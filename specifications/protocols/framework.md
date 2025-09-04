@@ -1,4 +1,4 @@
-# RFC XXXX: Distributed Adjacency and Messaging Framework
+# Distributed Adjacency and Messaging Framework
 
 ## Abstract
 
@@ -10,14 +10,14 @@ This RFC provides a blueprint for systems requiring adjacency retrieval and mess
 
 ## 2. Terminology
 
-- **Adjacency**: A relationship between entities (e.g., nodes in a graph).
+- **Neighborhood**: A relationship between entities (e.g., nodes in a graph).
 - **Message**: Data exchanged between client and server.
 
 ## 3. Requirements
 
 ### 3.1 Server Requirements
 
-- **Get Adjacency**: A method to retrieve adjacent entities for a given entity.
+- **Get Neighbors**: A method to retrieve adjacent entities for a given entity.
   - Input: Entity identifier, optional scope.
   - Output: List of adjacent entities or error.
 - **Send Message**: A method to transmit a message to a specified entity.
@@ -26,7 +26,7 @@ This RFC provides a blueprint for systems requiring adjacency retrieval and mess
 
 ### 3.2 Client Requirements
 
-- **Notify Adjacency Updates**: A method to receive updates about adjacency changes.
+- **Notify Neighborhood Updates**: A method to receive updates about adjacency changes.
   - Output: Updated adjacency data.
 - **Receive Message**: A method to receive messages from the server.
   - Output: Message payload.
