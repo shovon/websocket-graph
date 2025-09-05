@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This specification defines a framework for client-server systems to manage neighborhood relationships and messaging. The framework is meant to specify the communication medium between client-to-server and server-to-client, for the [architecture](../architecture.md). It mandates specific functional capabilities but leaves protocol and method naming to implementers, who must define these in companion specifications.
+This specification defines a framework for client-server systems to manage neighborhood relationships and messaging. The framework is meant to specify the communication medium between client-to-server and server-to-client, for the [Graph Relay System architecture](../architecture.md). It mandates specific functional capabilities but leaves protocol and method naming to implementers, who must define these in companion specifications.
 
 ## 1. Introduction
 
