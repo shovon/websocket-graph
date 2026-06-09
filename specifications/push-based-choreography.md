@@ -6,7 +6,7 @@ This document is a companion to the *GRS RPC Pushable Profile* (`rpc-push-profil
 
 It adds exactly one thing the operation definitions do not: **temporal sequencing** — what happens, in what order, and which parties observe it. It deliberately restates none of the relay semantics, designator rules, or best-effort guarantees fixed elsewhere; it only sequences behavior those documents already mandate, and points back to them.
 
-This document is therefore **largely non-normative**: the flows it draws are illustrations of behavior required by the profile and its companions. It is normative only where it imposes an ordering constraint not already implied, and such points are called out with RFC 2119 keywords in place. Section references of the form (Push §N) point into `rpc-push-profile.md`; (Core §N) into `rpc-interface.md`; (Delivery §N) into `delivery-and-consistency.md`; (Architecture §N) into `architecture.md`.
+This document is therefore **largely non-normative**: the flows it draws are illustrations of behavior required by the profile and its companions. It is normative only where it imposes an ordering constraint not already implied, and such points are called out with RFC 2119 keywords in place. Section references of the form (Push §N) point into `rpc-push-profile.md`; (Core §N) into `rpc-interface.md`; (Relay §N) into `relay-and-neighborhood-semantics.md`; (Architecture §N) into `architecture.md`.
 
 A parallel choreography for the request/response case is anticipated as a companion (`pull-based-choreography.md`); the differences are exactly those the Pull Profile introduces — a polled inbox in place of `Deliver`, and a polled `GetNeighborhood` in place of `NeighborhoodUpdate` — and are out of scope here.
 
@@ -45,7 +45,7 @@ The diagrams show only the messages each scenario introduces. Real participants 
 
 Opening a connection **is** joining: there is no `Join` operation and no session handle (Push §3). The connection establishes the node, the server places it in the graph and repairs the graph to keep it strongly connected (Architecture §3), and the server SHOULD push the node's initial `NeighborhoodState` via `NeighborhoodUpdate` before the client transacts further, so the client begins with a current view from the start (Push §3, §5.3).
 
-The initial state MAY be empty: a node that is momentarily the only node, or not yet wired to an out-neighbor, has an empty neighborhood, which is well-formed and not an error (Delivery §2). When a second node joins a previously single-node graph, that earlier node's neighborhood transitions from empty to non-empty — it observes this as a `NeighborhoodUpdate` like any other change (Section 7).
+The initial state MAY be empty: a node that is momentarily the only node, or not yet wired to an out-neighbor, has an empty neighborhood, which is well-formed and not an error (Relay §2). When a second node joins a previously single-node graph, that earlier node's neighborhood transitions from empty to non-empty — it observes this as a `NeighborhoodUpdate` like any other change (Section 7).
 
 ```mermaid
 sequenceDiagram
@@ -61,9 +61,9 @@ Establishing a node also changes some *other* node's neighborhood (its out-edge 
 
 ## 4. Sending to an Out-Neighbor
 
-To send, a client invokes `Send` with a `Designator` drawn from its current `NeighborhoodState` and a `Payload` (Push §5.1). The server resolves the designator against the sender's **current** neighborhood and, if it denotes a current out-neighbor, relays the payload to that node as a `Deliver` push (Push §5.2). The relay is best-effort (Delivery §6).
+To send, a client invokes `Send` with a `Designator` drawn from its current `NeighborhoodState` and a `Payload` (Push §5.1). The server resolves the designator against the sender's **current** neighborhood and, if it denotes a current out-neighbor, relays the payload to that node as a `Deliver` push (Push §5.2). The relay is best-effort (Relay §6).
 
-`Send` surfaces **at most** an acceptance decision, and MAY be one-way (Push §5.1). An acceptance decision reports only that the server accepted the message for a relay attempt — **never** that it was delivered (Delivery §6). A sender MUST NOT infer delivery from acceptance, nor from the absence of a discard indication.
+`Send` surfaces **at most** an acceptance decision, and MAY be one-way (Push §5.1). An acceptance decision reports only that the server accepted the message for a relay attempt — **never** that it was delivered (Relay §6). A sender MUST NOT infer delivery from acceptance, nor from the absence of a discard indication.
 
 ```mermaid
 sequenceDiagram
@@ -92,11 +92,11 @@ sequenceDiagram
     S-)B: Deliver(p)
 ```
 
-Because delivery is best-effort, the receiver MUST NOT assume every message relayed to it arrives, nor read anything into a message's absence (Delivery §6).
+Because delivery is best-effort, the receiver MUST NOT assume every message relayed to it arrives, nor read anything into a message's absence (Relay §6).
 
 ## 6. Discard of a Misaddressed Send
 
-A `Send` whose designator does not denote a current out-neighbor of the sender — because it is malformed, or no longer denotes one after a graph change the sender has not yet observed — is **discarded**. It is never relayed, and above all never delivered to some other node: this is the No-Misdelivery property (Delivery §3, §4). The cost is one-sided and bounded — a dropped message, never a misroute.
+A `Send` whose designator does not denote a current out-neighbor of the sender — because it is malformed, or no longer denotes one after a graph change the sender has not yet observed — is **discarded**. It is never relayed, and above all never delivered to some other node: this is the No-Misdelivery property (Relay §3, §4). The cost is one-sided and bounded — a dropped message, never a misroute.
 
 Whether the discard is visible to the sender is a binding choice: `Send` MAY surface a discard indication as part of its acceptance decision, or MAY be one-way and surface nothing (Core §4.1, Push §5.1). Where surfaced, the indication reports only the server's acceptance decision, not any fate at a receiver.
 
@@ -109,7 +109,7 @@ sequenceDiagram
 
 ## 7. Neighborhood Change and Its Fan-Out
 
-When a node's neighborhood changes — an out-edge added, removed, or retargeted — the server MUST push the updated `NeighborhoodState` to that affected node, and SHOULD do so promptly after the change is committed (Push §5.3, Delivery §5).
+When a node's neighborhood changes — an out-edge added, removed, or retargeted — the server MUST push the updated `NeighborhoodState` to that affected node, and SHOULD do so promptly after the change is committed (Push §5.3, Relay §5).
 
 The point this choreography makes explicit is that **a single structural change fans out to more than one node**. A node joining or leaving is not observed only by itself: repairing the graph to preserve strong connectivity (Architecture §3) retargets the out-edges of *other* nodes, and every node whose out-edge moved receives its own `NeighborhoodUpdate`.
 
@@ -144,7 +144,7 @@ sequenceDiagram
     Note right of S: A's out-edge retargeted off D
 ```
 
-Messages buffered for a departed node need not be preserved (Delivery §7), and the departed node's identity carries to nothing: a later reconnection is a wholly new, unrelated node (Architecture §3, §3.2).
+Messages buffered for a departed node need not be preserved (Relay §7), and the departed node's identity carries to nothing: a later reconnection is a wholly new, unrelated node (Architecture §3, §3.2).
 
 ## 9. References
 
@@ -153,7 +153,7 @@ Messages buffered for a departed node need not be preserved (Delivery §7), and 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
 - GRS RPC Pushable Profile (`rpc-push-profile.md`).
 - GRS RPC Common Core (`rpc-interface.md`).
-- GRS Delivery and Consistency (`delivery-and-consistency.md`).
+- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
 - Graph Relay System (GRS) Protocol (`architecture.md`).
 
 ### 9.2. Informative References

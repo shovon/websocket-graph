@@ -8,9 +8,9 @@ A payload is **what is carried, not the thing that carries it.** How a payload i
 
 It is the mirror image of the *GRS Designator String Representation* (`designator-string.md`). That binding makes a server-minted handle opaque to the **client**; this one makes a client-supplied payload opaque to the **server**. The two share a shape — a string, preserved by exact code points, with no structure ascribed to it — but point their non-interpretation rule in opposite directions: there, the client MUST NOT read what the server minted; here, the server MUST NOT read what the client sent.
 
-It fixes representation only. It changes none of the relay's semantics — best-effort delivery, no-misdelivery, and the server's content-agnostic role hold exactly as the companions state them (Architecture §6, Delivery §3, §6). In particular it imposes **no constraint on a payload's contents**: what a payload *means* is the application's, constructed above this interface (Architecture §3.2), and the server neither inspects nor interprets it.
+It fixes representation only. It changes none of the relay's semantics — best-effort delivery, no-misdelivery, and the server's content-agnostic role hold exactly as the companions state them (Architecture §6, Relay §3, §6). In particular it imposes **no constraint on a payload's contents**: what a payload *means* is the application's, constructed above this interface (Architecture §3.2), and the server neither inspects nor interprets it.
 
-It is one binding among possible others — an implementation MAY represent a payload differently (for example, as an opaque octet string) — and is normative for implementations that adopt the string representation. Section references of the form (Core §N) point into `rpc-interface.md`, (Delivery §N) into `delivery-and-consistency.md`, and (Architecture §N) into `architecture.md`.
+It is one binding among possible others — an implementation MAY represent a payload differently (for example, as an opaque octet string) — and is normative for implementations that adopt the string representation. Section references of the form (Core §N) point into `rpc-interface.md`, (Relay §N) into `relay-and-neighborhood-semantics.md`, and (Architecture §N) into `architecture.md`.
 
 ## Table of Contents
 
@@ -42,30 +42,30 @@ This binding ascribes **no internal structure** to the string, and imposes **no 
 A payload string is an **opaque value** to the server. The server is a relay (Architecture §6), not a reader: it conveys a payload from a sending node to one of its out-neighbors without depending on what the payload contains. Accordingly, the server MUST NOT:
 
 - parse, decode, or otherwise interpret the payload's code points, or attribute any meaning to them;
-- make a relay decision — to deliver, to discard, to order, to buffer, or to drop — as a function of the payload's **contents**. The relay decision is a function of the sending node and the `Send` designator alone (Delivery §4); the payload is never an input to it;
+- make a relay decision — to deliver, to discard, to order, to buffer, or to drop — as a function of the payload's **contents**. The relay decision is a function of the sending node and the `Send` designator alone (Relay §4); the payload is never an input to it;
 - transform the payload in transit — no Unicode normalization, no case folding, no whitespace trimming, no truncation, and no re-encoding that changes the code-point sequence.
 
-The only thing the server does with a payload is **relay it verbatim** to the out-neighbor the `Send` designator denotes (Section 4), or **discard** it when that designator denotes no current out-neighbor (Delivery §4) — a decision that, again, never consults the payload.
+The only thing the server does with a payload is **relay it verbatim** to the out-neighbor the `Send` designator denotes (Section 4), or **discard** it when that designator denotes no current out-neighbor (Relay §4) — a decision that, again, never consults the payload.
 
-This non-interpretation is a property an implementation SHOULD enforce **structurally**, not merely by policy: where practical, the code path that resolves a `Send` against the sender's neighborhood (Delivery §4) should not receive the payload as an input it could branch on, so that opacity holds by construction rather than by discipline.
+This non-interpretation is a property an implementation SHOULD enforce **structurally**, not merely by policy: where practical, the code path that resolves a `Send` against the sender's neighborhood (Relay §4) should not receive the payload as an input it could branch on, so that opacity holds by construction rather than by discipline.
 
 A receiving client, by contrast, **does** interpret the payload — that is the point of the relay — but it does so above this interface, and treats the payload as untrusted application data (Section 6).
 
 ## 4. Verbatim Relay
 
-When the server relays a payload (Delivery §4, §6), it delivers to the receiving node the **identical code-point sequence** the sender supplied. The relay is a transparent pipe: the payload a receiver obtains compares equal, code point for code point, to the payload the sender sent.
+When the server relays a payload (Relay §4, §6), it delivers to the receiving node the **identical code-point sequence** the sender supplied. The relay is a transparent pipe: the payload a receiver obtains compares equal, code point for code point, to the payload the sender sent.
 
 - No normalization, case folding, trimming, truncation, or re-encoding is performed by the server on the relay path; whatever entered is what is delivered (Section 3).
 - This preservation holds end to end across the server's mediation, exactly as `designator-string.md` §2 requires for designators. Whatever layer carries the payload across the transport (Section 5) MUST preserve its code-point sequence so that the sender's and receiver's views are identical.
 
-Verbatim relay is what lets two clients pour their own structure into the payload (Architecture §3.2) and rely on it arriving unmolested, while the server remains oblivious to that structure (Section 3). Preservation is a guarantee about *fidelity*, not *arrival*: the relay remains best-effort, and a payload MAY be dropped entirely (Delivery §6), but a payload that is delivered is delivered unchanged.
+Verbatim relay is what lets two clients pour their own structure into the payload (Architecture §3.2) and rely on it arriving unmolested, while the server remains oblivious to that structure (Section 3). Preservation is a guarantee about *fidelity*, not *arrival*: the relay remains best-effort, and a payload MAY be dropped entirely (Relay §6), but a payload that is delivered is delivered unchanged.
 
 ## 5. Carriage, Framing, and Size Are Out of Scope
 
-This binding fixes the carried value — a string of Unicode code points (Section 2) — and **nothing about how that value is carried**. The following all belong to the layer that conveys a payload across the transport (the envelope, and the transport binding beneath it), and are deliberately left open here, consistent with Delivery §7 and Core §5:
+This binding fixes the carried value — a string of Unicode code points (Section 2) — and **nothing about how that value is carried**. The following all belong to the layer that conveys a payload across the transport (the envelope, and the transport binding beneath it), and are deliberately left open here, consistent with Relay §7 and Core §5:
 
 - how a payload is framed and encoded on the wire (for example, as a JSON string under a JSON encoding, or as a length-delimited frame), and how its code-point sequence is recovered on the far side;
-- any **maximum payload size**, and the rejection or handling of an over-size payload (Delivery §7, Core §3);
+- any **maximum payload size**, and the rejection or handling of an over-size payload (Relay §7, Core §3);
 - what constitutes a well-formed carrying frame, and the treatment of one that is malformed.
 
 These are concerns of the **envelope**, not of the payload. The single obligation this binding places on whatever carries a payload is the preservation rule of Section 4: the carried code-point sequence MUST arrive identical to the one that was sent. Everything else about carriage is for that layer to fix, and this document takes no position on it.
@@ -83,7 +83,7 @@ This binding inherits the considerations of Core §6 and Architecture §8 and ad
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
 - GRS RPC Common Core (`rpc-interface.md`).
-- GRS Delivery and Consistency (`delivery-and-consistency.md`).
+- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
 - Graph Relay System (GRS) Protocol (`architecture.md`).
 
 ### 7.2. Informative References

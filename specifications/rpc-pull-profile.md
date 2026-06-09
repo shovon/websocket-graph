@@ -6,7 +6,7 @@ This document is a profile of the *GRS RPC Common Core* (`rpc-interface.md`) for
 
 It **assumes a session** beneath it — an association with a definite beginning, a carried identity, a liveness notion, and a definite end — over the connectionless transport that does not provide one natively. How that session is supplied is out of scope here and is the implementer's responsibility, exactly as the *GRS RPC Pushable Profile* (`rpc-push-profile.md`) assumes a full-duplex connection without specifying WebSocket or TCP; `rpc-pull-session.md` is one example realization (Section 3). With a session assumed, this profile is structurally parallel to the Pushable Profile: both treat a session as a node and define only the GRS operations carried within it. The single way this profile remains heavier is the receiving half of the relay — because even with a session the server still cannot push, that half stays a client poll (Section 5).
 
-This profile is normative for implementations claiming the GRS Pull Profile. It depends on, and does not restate, the abstract data and the `Send` semantics of the core; it is here that the core's session-and-node-lifecycle responsibility (Core §4.4) is fixed — by binding the node to an assumed session (Section 3) — and the core's neighborhood-state-availability responsibility (Core §4.2) is fixed, as a pull query. Section references (Core §N) point into `rpc-interface.md`, and (Architecture §N) / (Delivery §N) into the respective companions.
+This profile is normative for implementations claiming the GRS Pull Profile. It depends on, and does not restate, the abstract data and the `Send` semantics of the core; it is here that the core's session-and-node-lifecycle responsibility (Core §4.4) is fixed — by binding the node to an assumed session (Section 3) — and the core's neighborhood-state-availability responsibility (Core §4.2) is fixed, as a pull query. Section references (Core §N) point into `rpc-interface.md`, and (Architecture §N) / (Relay §N) into the respective companions.
 
 ## Table of Contents
 
@@ -61,14 +61,14 @@ Each operation below is carried within an established session: the session ident
 - **Input**: none (the session identifies the node).
 - **Output**: the node's current `NeighborhoodState`.
 
-This is the pull mechanism by which this profile satisfies the core's neighborhood-state-availability responsibility (Core §4.2): the client obtains its current out-neighbors, and the designators it addresses `Send` with, by querying on demand. The server MUST answer with state reflecting the latest committed configuration (Delivery §5). A client MAY query at any time; because this profile has no push, re-invoking it is also the *only* way a client observes a neighborhood change (Section 6).
+This is the pull mechanism by which this profile satisfies the core's neighborhood-state-availability responsibility (Core §4.2): the client obtains its current out-neighbors, and the designators it addresses `Send` with, by querying on demand. The server MUST answer with state reflecting the latest committed configuration (Relay §5). A client MAY query at any time; because this profile has no push, re-invoking it is also the *only* way a client observes a neighborhood change (Section 6).
 
 ### 4.2. `Send` (client → server)
 
 - **Input**: a `Designator` and a `Payload`.
 - **Output**: at most an acceptance decision (Core §4.1).
 
-As Core §4.1, with no change to relay semantics: best-effort, no-misdelivery, designator resolved against the node's current neighborhood (Delivery §3, §4).
+As Core §4.1, with no change to relay semantics: best-effort, no-misdelivery, designator resolved against the node's current neighborhood (Relay §3, §4).
 
 ### 4.3. `Receive` (client → server)
 
@@ -81,16 +81,16 @@ The server MAY hold the request open until at least one payload is available or 
 
 ## 5. The Inbox Model
 
-The inbox is the server-held buffer that stands in for a push channel. Its contract is exactly the core's relay floor (Core §4.3, Delivery §6), realized as storage rather than delivery:
+The inbox is the server-held buffer that stands in for a push channel. Its contract is exactly the core's relay floor (Core §4.3, Relay §6), realized as storage rather than delivery:
 
-- **Best-effort retention.** The server SHOULD retain a relayed payload until the node next drains it, but the inbox is finite: under pressure (size or age limits) the server MAY drop buffered payloads. As with the relay floor, it MUST NOT *systematically* drop conformant traffic — an inbox that discards everything as a matter of course does not conform (Delivery §6).
-- **Drain-on-read, at-most-once.** `Receive` removes what it returns. The profile does not define acknowledgements, cursors, or redelivery; a payload returned by `Receive` but lost before the client uses it is gone. Reliability beyond this floor is out of scope and is deferred to a future document (Delivery §7).
+- **Best-effort retention.** The server SHOULD retain a relayed payload until the node next drains it, but the inbox is finite: under pressure (size or age limits) the server MAY drop buffered payloads. As with the relay floor, it MUST NOT *systematically* drop conformant traffic — an inbox that discards everything as a matter of course does not conform (Relay §6).
+- **Drain-on-read, at-most-once.** `Receive` removes what it returns. The profile does not define acknowledgements, cursors, or redelivery; a payload returned by `Receive` but lost before the client uses it is gone. Reliability beyond this floor is out of scope and is deferred to a future document (Relay §7).
 - **Ordering deferred.** The order in which `Receive` returns buffered payloads is not fixed by this profile; ordering, like neighborhood-state versioning (Core §3), is deferred to a future document.
-- **Fate on session end.** When the session ends and the node departs (Section 3), its inbox MAY be discarded; messages held for a departed node are not preserved (Delivery §7).
+- **Fate on session end.** When the session ends and the node departs (Section 3), its inbox MAY be discarded; messages held for a departed node are not preserved (Relay §7).
 
 ## 6. Observing Neighborhood Changes
 
-This profile has no neighborhood-change push. A client learns its current out-neighbors only by calling `GetNeighborhood` (Section 4.1), and learns of a *change* only by calling it again. The recency of a client's view is therefore bounded by its own poll cadence (Delivery §5). Whatever a client does between polls, the relay stays safe: a `Send` whose designator does not denote a current out-neighbor is discarded, never misdelivered (Delivery §3, §4).
+This profile has no neighborhood-change push. A client learns its current out-neighbors only by calling `GetNeighborhood` (Section 4.1), and learns of a *change* only by calling it again. The recency of a client's view is therefore bounded by its own poll cadence (Relay §5). Whatever a client does between polls, the relay stays safe: a `Send` whose designator does not denote a current out-neighbor is discarded, never misdelivered (Relay §3, §4).
 
 Push-based neighborhood notification is intentionally absent here; it is a feature of the companion Pushable Profile (`rpc-push-profile.md`), which the underlying transport makes possible there and not here.
 
@@ -110,7 +110,7 @@ This profile inherits Core §6 and Architecture §8. Any credential the session 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
 - GRS RPC Common Core (`rpc-interface.md`).
 - Graph Relay System (GRS) Protocol (`architecture.md`).
-- GRS Delivery and Consistency (`delivery-and-consistency.md`).
+- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
 
 ### 8.2. Informative References
 

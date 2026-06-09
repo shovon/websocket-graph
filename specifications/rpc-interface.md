@@ -2,14 +2,14 @@
 
 ## Status of This Memo
 
-This document is a companion specification to the *Graph Relay System (GRS) Protocol* (`architecture.md`) and its *Delivery and Consistency* companion (`delivery-and-consistency.md`). It fixes the **common core** of the GRS remote-procedure interface: the parts that do not depend on how a client and server exchange messages — the abstract data, the semantics of the operations a client invokes on the server, and the two server-owed responsibilities the relay rests on.
+This document is a companion specification to the *Graph Relay System (GRS) Protocol* (`architecture.md`) and its *Relay and Neighborhood Semantics* companion (`relay-and-neighborhood-semantics.md`). It fixes the **common core** of the GRS remote-procedure interface: the parts that do not depend on how a client and server exchange messages — the abstract data, the semantics of the operations a client invokes on the server, and the two server-owed responsibilities the relay rests on.
 
 It deliberately does **not** fix how server-originated events reach a client, nor how a node is established and its departure detected. Those depend on whether the transport can carry server-initiated messages, and they are fixed by one of two companion **profiles**, exactly one of which an implementation adopts:
 
 - **GRS RPC Pull Profile** (`rpc-pull-profile.md`) — for request/response, client-initiated-only transports (e.g. HTTP), where the server cannot push and a session must be synthesized from independent requests.
 - **GRS RPC Pushable Profile** (`rpc-push-profile.md`) — for full-duplex, session-oriented transports (e.g. WebSocket, raw TCP), where the server can push and a connection *is* the session.
 
-This document is normative for both profiles. Where the two profiles differ, this core states the *responsibility* and defers the *mechanism* to the profile; a profile MUST fix each such mechanism concretely (it is not left open within a profile). Section references of the form (Architecture §N) point into `architecture.md`; (Delivery §N) into `delivery-and-consistency.md`.
+This document is normative for both profiles. Where the two profiles differ, this core states the *responsibility* and defers the *mechanism* to the profile; a profile MUST fix each such mechanism concretely (it is not left open within a profile). Section references of the form (Architecture §N) point into `architecture.md`; (Relay §N) into `relay-and-neighborhood-semantics.md`.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ This document is normative for both profiles. Where the two profiles differ, thi
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
-This document uses the terms **Server**, **Client**, **Node**, **out-neighbor**, **in-neighbor**, **neighborhood**, **neighborhood state**, and **Designator** as defined in Architecture §2 and refined in Delivery §2.
+This document uses the terms **Server**, **Client**, **Node**, **out-neighbor**, **in-neighbor**, **neighborhood**, **neighborhood state**, and **Designator** as defined in Architecture §2 and refined in Relay §2.
 
 A **procedure** (or **operation**) is an abstract, named action with a direction, zero or more inputs, and zero or more outputs. A **client-initiated** procedure is invoked by a client and serviced by the server. A **server-originated** event is one whose occurrence the server decides (a relayed message arriving for a node; a neighborhood change). The core defines client-initiated operations and the *requirement* that server-originated events reach the client; a profile fixes the mechanism by which they do.
 
@@ -43,7 +43,7 @@ A client participates in GRS as a single node (Architecture §3). Every operatio
 
 The interface has exactly two responsibilities, mirroring the two the server owes a client (Architecture §4):
 
-1. **Make neighborhood state available** to the node — its set of current out-neighbors and their designators (Delivery §5).
+1. **Make neighborhood state available** to the node — its set of current out-neighbors and their designators (Relay §5).
 2. **Carry the relay primitive** in both directions — the sending half (`Send`, Section 4.1) and the receiving half (Section 4.3).
 
 Only the sending half is client-initiated and identical in semantics across profiles, so the core fixes it as a concrete operation (Section 4.1). The other three concerns — making neighborhood state available, the receiving half, and node lifecycle — differ fundamentally by transport, so the core states each as a responsibility and each profile fixes the mechanism (Sections 4.2–4.4).
@@ -52,9 +52,9 @@ Only the sending half is client-initiated and identical in semantics across prof
 
 This document defines the following abstract types. A profile, or a transport binding beneath it, fixes their concrete representation.
 
-- **Payload**: An opaque, application-defined value carried by the relay. The interface neither inspects nor interprets it. Its maximum size is transport-defined (Delivery §7).
-- **Designator**: A handle denoting one out-neighbor, with the semantics of Delivery §2 — distinct among a node's current out-neighbors, but not necessarily globally unique, persistent, or stable across neighborhood changes. What a designator means from one neighborhood state to the next is left to a future layer (Delivery §2).
-- **NeighborhoodState**: The set of the node's current out-neighbors, each represented by its designator (Delivery §2). The set MAY be empty, which is a well-formed state and not an error (Delivery §2). The ordering and versioning of successive neighborhood states — how a client tells a newer state from an older one — is intentionally out of scope for this revision and is deferred to a future document.
+- **Payload**: An opaque, application-defined value carried by the relay. The interface neither inspects nor interprets it. Its maximum size is transport-defined (Relay §7).
+- **Designator**: A handle denoting one out-neighbor, with the semantics of Relay §2 — distinct among a node's current out-neighbors, but not necessarily globally unique, persistent, or stable across neighborhood changes. What a designator means from one neighborhood state to the next is left to a future layer (Relay §2).
+- **NeighborhoodState**: The set of the node's current out-neighbors, each represented by its designator (Relay §2). The set MAY be empty, which is a well-formed state and not an error (Relay §2). The ordering and versioning of successive neighborhood states — how a client tells a newer state from an older one — is intentionally out of scope for this revision and is deferred to a future document.
 
 ## 4. Operations and Responsibilities
 
@@ -64,18 +64,18 @@ This document defines the following abstract types. A profile, or a transport bi
 - **Input**: a `Designator` and a `Payload`, plus the caller's node identity (Section 4.4).
 - **Output**: at most an **acceptance decision** (accepted for relay attempt, or discarded). A profile MAY define this operation as one-way, surfacing no output at all.
 
-The server relays the payload to the out-neighbor the designator denotes **at the moment of sending**, or discards it; it MUST NOT deliver it to any other node (No-Misdelivery, Delivery §3). A designator that does not denote a current out-neighbor — whether malformed, or no longer denoting one after a graph change — results in discard, never misdelivery (Delivery §4).
+The server relays the payload to the out-neighbor the designator denotes **at the moment of sending**, or discards it; it MUST NOT deliver it to any other node (No-Misdelivery, Relay §3). A designator that does not denote a current out-neighbor — whether malformed, or no longer denoting one after a graph change — results in discard, never misdelivery (Relay §4).
 
-The relay is **best-effort** (Architecture §6, Delivery §6):
+The relay is **best-effort** (Architecture §6, Relay §6):
 
 - An acceptance decision, where surfaced, reports **only the server's acceptance**, not the message's fate at the receiver. A sender MUST NOT infer delivery from acceptance, nor from the absence of a discard indication.
-- The server MUST make a genuine attempt to relay a validly addressed message and MUST NOT systematically decline to do so (Delivery §6).
+- The server MUST make a genuine attempt to relay a validly addressed message and MUST NOT systematically decline to do so (Relay §6).
 
 This is the protocol's one interaction primitive (Architecture §3.2): the interface defines no traversal, no broadcast, and no end-to-end send to a non-neighbor. Reach beyond the immediate neighborhood, and any reply path, is constructed by clients above this operation (Architecture §3.1, §3.2).
 
 ### 4.2. Neighborhood State Availability (mechanism deferred to profile)
 
-A client can address `Send` (Section 4.1) only by designating a current out-neighbor, so the server MUST make a node's current neighborhood state available to it (Architecture §4, Delivery §5). Whatever mechanism a profile fixes, the state made available MUST reflect the latest committed configuration at the moment it is made available (Delivery §5).
+A client can address `Send` (Section 4.1) only by designating a current out-neighbor, so the server MUST make a node's current neighborhood state available to it (Architecture §4, Relay §5). Whatever mechanism a profile fixes, the state made available MUST reflect the latest committed configuration at the moment it is made available (Relay §5).
 
 How that state reaches the client depends on whether the transport can carry server-originated messages, and each profile MUST fix one mechanism:
 
@@ -91,7 +91,7 @@ The ordering and versioning of successive neighborhood states remains out of sco
 - In a **pushable** transport, the server delivers each relayed payload to the destination node as a server-originated event (`Deliver`, defined by `rpc-push-profile.md`).
 - In a **pull** transport, the server buffers relayed payloads for the node and the client drains them by polling (`Receive`, defined by `rpc-pull-profile.md`).
 
-Whichever mechanism a profile fixes, it MUST honor the same invariants this core and the companions impose on the relay: best-effort delivery with no acknowledgement guarantee (Delivery §6), and no sender designator or reply path implied by receipt (Architecture §3.1). A relayed payload is handed to the receiver with no obligation to identify its originator; a client requiring origin or a reply path constructs it within the `Payload`, above this interface (Architecture §3.2).
+Whichever mechanism a profile fixes, it MUST honor the same invariants this core and the companions impose on the relay: best-effort delivery with no acknowledgement guarantee (Relay §6), and no sender designator or reply path implied by receipt (Architecture §3.1). A relayed payload is handed to the receiver with no obligation to identify its originator; a client requiring origin or a reply path constructs it within the `Payload`, above this interface (Architecture §3.2).
 
 ### 4.4. Sessions and Node Lifecycle (mechanism deferred to profile)
 
@@ -104,12 +104,12 @@ Either way, under the base default the server attaches no identity to a node acr
 
 ## 5. What a Profile Fixes
 
-Beyond the per-profile mechanisms of Sections 4.3 and 4.4, the following are left to a profile (and to any transport binding beneath it), consistent with Delivery §7:
+Beyond the per-profile mechanisms of Sections 4.3 and 4.4, the following are left to a profile (and to any transport binding beneath it), consistent with Relay §7:
 
 - The encoding and framing of operations and of the abstract data of Section 3, including the concrete form of a `Designator` and of `Payload`, and the maximum payload size.
 - The call mechanics of each operation: request/response versus one-way, and correlation of responses.
-- Whether, and how, an acceptance decision (Section 4.1) is surfaced, and whether any discard indication is reported (Delivery §4).
-- Ordering of relayed payloads, buffering and retention of pending messages, the fate of messages held for a departing node, and any reliability or deduplication beyond the best-effort floor (Delivery §6, §7).
+- Whether, and how, an acceptance decision (Section 4.1) is surfaced, and whether any discard indication is reported (Relay §4).
+- Ordering of relayed payloads, buffering and retention of pending messages, the fate of messages held for a departing node, and any reliability or deduplication beyond the best-effort floor (Relay §6, §7).
 
 Clients requiring end-to-end guarantees — reliable delivery, ordering, acknowledgement, identity continuity across sessions, or a reply path to a node with no edge toward them — construct them above this interface (Architecture §3.2), not by expecting them from these operations.
 
@@ -118,8 +118,8 @@ Clients requiring end-to-end guarantees — reliable delivery, ordering, acknowl
 This core inherits the considerations of Architecture §8; each profile adds those specific to how it identifies a node (Section 4.4).
 
 - **Self-scoping is authority.** Because every operation is scoped to the caller's own node (Section 2) and no operation accepts a "self" identifier, a client cannot name or act as another node merely by argument. A profile MUST ensure a caller can invoke operations only as its own node, so that `Send` cannot be issued on behalf of, and the receiving half cannot be redirected to, a node other than the caller's own. The means by which a profile binds a caller to a node — a transport connection, or a session-layer session — is therefore security-critical (Section 4.4).
-- **Resolution is against the current neighborhood.** A profile MUST resolve a `Send` designator against the sending node's *current* neighborhood, so that a designator which does not denote a current out-neighbor — whether stale, guessed, or malformed — yields discard, never misdelivery (Delivery §3, §4) and never reach to a non-neighbor. Designators are therefore not capabilities: holding or guessing one grants nothing beyond what the caller's current neighborhood already allows.
-- **Acceptance is not delivery.** Because `Send` may surface an acceptance decision (Section 4.1), implementers and clients MUST NOT treat it as a delivery signal; doing so would reintroduce a guarantee the relay explicitly disclaims (Delivery §6).
+- **Resolution is against the current neighborhood.** A profile MUST resolve a `Send` designator against the sending node's *current* neighborhood, so that a designator which does not denote a current out-neighbor — whether stale, guessed, or malformed — yields discard, never misdelivery (Relay §3, §4) and never reach to a non-neighbor. Designators are therefore not capabilities: holding or guessing one grants nothing beyond what the caller's current neighborhood already allows.
+- **Acceptance is not delivery.** Because `Send` may surface an acceptance decision (Section 4.1), implementers and clients MUST NOT treat it as a delivery signal; doing so would reintroduce a guarantee the relay explicitly disclaims (Relay §6).
 - **Confidentiality.** Every payload traverses the server (Architecture §8); this interface provides no end-to-end confidentiality. Clients requiring it encrypt within `Payload`, above this interface.
 
 Authentication of the caller, admission control, and rejection of spoofed designations or identities are shared between the profile and Architecture §8.
@@ -130,7 +130,7 @@ Authentication of the caller, admission control, and rejection of spoofed design
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
 - Graph Relay System (GRS) Protocol (`architecture.md`).
-- GRS Delivery and Consistency (`delivery-and-consistency.md`).
+- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
 
 ### 7.2. Informative References
 

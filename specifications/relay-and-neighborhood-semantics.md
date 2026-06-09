@@ -1,4 +1,4 @@
-# GRS Delivery and Consistency
+# GRS Relay and Neighborhood Semantics
 
 ## Status of This Memo
 

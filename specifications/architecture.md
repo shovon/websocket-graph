@@ -33,7 +33,7 @@ Some systems need a central authority to decide who may talk to whom, but should
 
 This protocol is aspirational, focusing on high-level concepts to guide the creation of practical implementations. It assumes a client-server medium for core operations but allows for flexibility in derivative works. The goal is to keep the graph strongly connected, with changes propagated promptly, while direct communication is limited to graph neighbors.
 
-This document does not mandate specific transport mechanisms, data formats, or algorithms. The finer semantics of how state and messages move — neighborhood state, designators, delivery, and consistency — are specified separately in a companion document, *GRS Delivery and Consistency* (`delivery-and-consistency.md`), so that this overview can stay focused on the architecture's shape.
+This document does not mandate specific transport mechanisms, data formats, or algorithms. The finer semantics of how state and messages move — neighborhood state, designators, delivery, and consistency — are specified separately in a companion document, *GRS Relay and Neighborhood Semantics* (`relay-and-neighborhood-semantics.md`), so that this overview can stay focused on the architecture's shape.
 
 ## 2. Terminology
 
@@ -45,7 +45,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - **Out-neighbor**: A node Y is an out-neighbor of node X when a directed edge runs from X to Y. X's **neighborhood** is its set of out-neighbors.
 - **In-neighbor**: A node X is an in-neighbor of node Y when X has Y as an out-neighbor. Because edges are directional, a node's in-neighbors and out-neighbors are distinct sets that need not coincide.
 - **Reachability**: A structural property of the graph: from any node, the server can reach every other node by following directed edges. A graph with this property is **strongly connected**. Reachability describes server traversal; it does not grant clients the ability to reach non-neighbors.
-- **Designator**: A handle by which the server lets a node denote one of its out-neighbors. Its detailed semantics — in particular how a node's out-neighbors are distinguished and how a designator is resolved — are specified in the companion *Delivery and Consistency* document, which deliberately leaves how designators are allocated, and what (if anything) they mean across neighborhood changes, to a future layer.
+- **Designator**: A handle by which the server lets a node denote one of its out-neighbors. Its detailed semantics — in particular how a node's out-neighbors are distinguished and how a designator is resolved — are specified in the companion *Relay and Neighborhood Semantics* document, which deliberately leaves how designators are allocated, and what (if anything) they mean across neighborhood changes, to a future layer.
 - **Graph**: A directed graph maintained by the server, where nodes correspond to clients and edges define direct communication allowances.
 
 ## 3. Architecture Overview
@@ -92,7 +92,7 @@ The server acts as the authoritative maintainer of the graph. It MUST:
 - Construct and dynamically update the graph to keep it strongly connected.
 - Handle additions, removals, and modifications of nodes (e.g., due to client disconnections or topology optimizations).
 - Detect when a node has departed or become unreachable (for example, via connection close, heartbeat, or timeout) so that the graph can be repaired. The detection mechanism is implementation-defined.
-- Make each affected node's updated neighborhood state available once a change is committed, and relay messages from a node to its out-neighbors — and only its out-neighbors. The precise guarantees governing state availability and message delivery are specified in the companion *Delivery and Consistency* document.
+- Make each affected node's updated neighborhood state available once a change is committed, and relay messages from a node to its out-neighbors — and only its out-neighbors. The precise guarantees governing state availability and message delivery are specified in the companion *Relay and Neighborhood Semantics* document.
 
 The server SHOULD aim for efficiency in graph maintenance but is not required to optimize for specific metrics like latency or bandwidth.
 
@@ -110,7 +110,7 @@ Clients MAY:
 - Send messages, via the server, to any node in their neighborhood — that is, to any of their current out-neighbors, and to no one else (Section 3.1).
 - Receive messages, via the server, from any of their in-neighbors. Because the neighbor relation is not symmetric, the set of nodes a client can send to and the set it can receive from need not coincide, and receiving from a node does not imply being able to send to it (Section 3.1).
 
-How a client names its out-neighbors, how long such a name remains valid, and what happens to a message addressed to a node that is no longer an out-neighbor are governed by the companion *Delivery and Consistency* document.
+How a client names its out-neighbors, how long such a name remains valid, and what happens to a message addressed to a node that is no longer an out-neighbor are governed by the companion *Relay and Neighborhood Semantics* document.
 
 ## 6. Communication Rules
 
@@ -121,24 +121,24 @@ Communication in GRS is graph-constrained:
 
 This places all routing at the edges: the server relays from a node to its out-neighbors and does no more; any reach beyond the immediate neighborhood is constructed by clients above this primitive (Section 3.2). It bounds what the *server* does, not what clients can achieve.
 
-The detailed delivery contract — what "best-effort" guarantees and excludes, how stale addressing is handled, and what is left to the transport (buffering, ordering, retention, message size, and the like) — is specified in the companion *Delivery and Consistency* document. A specification binding GRS to a concrete transport is expected to fix the remaining choices.
+The detailed delivery contract — what "best-effort" guarantees and excludes, how stale addressing is handled, and what is left to the transport (buffering, ordering, retention, message size, and the like) — is specified in the companion *Relay and Neighborhood Semantics* document. A specification binding GRS to a concrete transport is expected to fix the remaining choices.
 
 ## 7. Extensibility and Derivatives
 
 This specification focuses on the core client-server paradigm. However, core implementations MUST adhere to the client-server model to preserve simplicity and control.
 
-Implementers are encouraged to develop detailed protocols, including transport bindings, message formats, and error handling, to realize GRS in practice. Such a document is a **derivative**: it builds on this architecture and its companions, fixing choices they deliberately leave open or strengthening guarantees they state as floors, without restating or replacing what they already fix. The companion specifications are themselves derivatives in this sense — `delivery-and-consistency.md` fixes the relay and designator semantics this overview defers, and `unique-session-identity` strengthens the base's ephemeral, per-session identity (Section 3) in one direction the companions permit.
+Implementers are encouraged to develop detailed protocols, including transport bindings, message formats, and error handling, to realize GRS in practice. Such a document is a **derivative**: it builds on this architecture and its companions, fixing choices they deliberately leave open or strengthening guarantees they state as floors, without restating or replacing what they already fix. The companion specifications are themselves derivatives in this sense — `relay-and-neighborhood-semantics.md` fixes the relay and designator semantics this overview defers, and `unique-session-identity` strengthens the base's ephemeral, per-session identity (Section 3) in one direction the companions permit.
 
 ## 7.1. Conformance of Derivatives
 
 A derivative is GRS-conformant when everything written against this architecture and its companions still holds under it. The intent is to welcome derivatives that add structure for their own microcosm, while excluding those that quietly repudiate what the base fixes. Concretely, a derivative:
 
-- MUST preserve every guarantee and prohibition this document and its companions fix. The properties the base mandates — strong connectivity (Section 3), the directional send permission and its no-reply consequence (Sections 3.1, 6), No-Misdelivery and resolution against the current neighborhood (*Delivery and Consistency* §3, §4), and the relay's anti-abuse floor (*Delivery and Consistency* §6) — MUST continue to hold for any client that relies on them.
-- MAY strengthen any property the base leaves as a non-guarantee, and MAY fix any choice the base leaves open. Best-effort delivery is a **floor, not a ceiling**: a derivative binding GRS to a reliable, ordered transport (for example TCP or WebSocket) MAY guarantee delivery and ordering above that floor (*Delivery and Consistency* §6, §7), just as a derivative MAY make a designator stable, globally unique, or persistent across sessions beyond the base's per-state distinctness (*Delivery and Consistency* §2; designator-string §6). Strengthening a non-guarantee does not contradict the base, because nothing written against the base assumed the *absence* of the stronger property.
+- MUST preserve every guarantee and prohibition this document and its companions fix. The properties the base mandates — strong connectivity (Section 3), the directional send permission and its no-reply consequence (Sections 3.1, 6), No-Misdelivery and resolution against the current neighborhood (*Relay and Neighborhood Semantics* §3, §4), and the relay's anti-abuse floor (*Relay and Neighborhood Semantics* §6) — MUST continue to hold for any client that relies on them.
+- MAY strengthen any property the base leaves as a non-guarantee, and MAY fix any choice the base leaves open. Best-effort delivery is a **floor, not a ceiling**: a derivative binding GRS to a reliable, ordered transport (for example TCP or WebSocket) MAY guarantee delivery and ordering above that floor (*Relay and Neighborhood Semantics* §6, §7), just as a derivative MAY make a designator stable, globally unique, or persistent across sessions beyond the base's per-state distinctness (*Relay and Neighborhood Semantics* §2; designator-string §6). Strengthening a non-guarantee does not contradict the base, because nothing written against the base assumed the *absence* of the stronger property.
 - MUST NOT relax, remove, or contradict a requirement stated here or in a companion, nor redefine a term these documents define (Section 2). A derivative that, for instance, permits misdelivery, lets a node send to a non-neighbor, or has the server make relay decisions from a payload's contents is not a GRS derivative but a different protocol, and MUST NOT claim conformance.
 - SHOULD, where it strengthens a guarantee, document both the stronger guarantee it provides and — where an axis offers more than one direction — the directions it does *not* take, so that what may be built atop the derivative is clear. The `unique-session-identity` binding is written this way: it strengthens identity toward per-session global uniqueness while explicitly declining cross-session persistence.
 
-The test is **substitutability**: code written to the base contract MUST continue to work, unmodified, against any conformant derivative. A derivative adds and narrows; it never subtracts. A guaranteed-delivery profile passes this test — a client that tolerated best-effort loss still works when loss never happens. A document that instead repudiates a base requirement — however reasonable its alternative — is outside this family and SHOULD NOT borrow its conformance language.
+The test is **substitutability**: code written to the base contract MUST continue to work, unmodified, against any conformant derivative. A derivative adds and narrows; it never subtracts. A profile that strengthens the best-effort relay toward reliable, in-order delivery passes this test — a client that tolerated loss still works when loss never happens. A document that instead repudiates a base requirement — however reasonable its alternative — is outside this family and SHOULD NOT borrow its conformance language.
 
 ## 8. Security Considerations
 
@@ -171,7 +171,7 @@ This aspirational specification draws from concepts in graph theory and networke
 
 ### 11.2. Informative References
 
-- GRS Delivery and Consistency (`delivery-and-consistency.md`): companion specification fixing neighborhood-state availability, designator semantics, and the delivery contract.
+- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`): companion specification fixing neighborhood-state availability, designator semantics, and the delivery contract.
 - GRS RPC Common Core (`rpc-interface.md`): companion specification fixing the common abstract data, operation semantics, and server responsibilities of the relay interface, specialized by one of two transport profiles:
   - GRS RPC Pull Profile (`rpc-pull-profile.md`): for request/response transports (e.g. HTTP), layered on the GRS RPC Pull Session Layer (`rpc-pull-session.md`), which synthesizes a session over a connectionless transport.
   - GRS RPC Pushable Profile (`rpc-push-profile.md`): for full-duplex transports (e.g. WebSocket, TCP), where the connection is itself the session.

@@ -4,7 +4,7 @@
 
 This document is a profile of the *GRS RPC Common Core* (`rpc-interface.md`) for **full-duplex, session-oriented transports** — environments in which the server can send a message to a client at any time, not only in response to a request, and in which a persistent connection underlies the session. WebSocket and raw TCP are the archetypes.
 
-It specializes the two responsibilities the core defers (Core §4.3, §4.4) in the direct way such a transport allows: the receiving half of the relay is a genuine server push, and a node's lifetime is the connection's lifetime. This makes it the lighter of the two profiles — the architecture's "node existence is coterminous with the session" (Architecture §3) holds literally here, so no establishment or teardown procedure is needed. It is normative for implementations claiming the GRS Pushable Profile, and depends on, without restating, the abstract data and the `Send` semantics of the core; it is here that the core's neighborhood-state-availability responsibility (Core §4.2) is fixed, primarily by push. Section references (Core §N) point into `rpc-interface.md`; (Architecture §N) and (Delivery §N) into the respective companions.
+It specializes the two responsibilities the core defers (Core §4.3, §4.4) in the direct way such a transport allows: the receiving half of the relay is a genuine server push, and a node's lifetime is the connection's lifetime. This makes it the lighter of the two profiles — the architecture's "node existence is coterminous with the session" (Architecture §3) holds literally here, so no establishment or teardown procedure is needed. It is normative for implementations claiming the GRS Pushable Profile, and depends on, without restating, the abstract data and the `Send` semantics of the core; it is here that the core's neighborhood-state-availability responsibility (Core §4.2) is fixed, primarily by push. Section references (Core §N) point into `rpc-interface.md`; (Architecture §N) and (Relay §N) into the respective companions.
 
 ## Table of Contents
 
@@ -54,7 +54,7 @@ Client-initiated operations carry no node identifier — the connection identifi
 - **Input**: a `Designator` and a `Payload`.
 - **Output**: at most an acceptance decision (Core §4.1); MAY be one-way.
 
-As Core §4.1, with no change to relay semantics: best-effort, no-misdelivery, designator resolved against the node's current neighborhood (Delivery §3, §4).
+As Core §4.1, with no change to relay semantics: best-effort, no-misdelivery, designator resolved against the node's current neighborhood (Relay §3, §4).
 
 ### 5.2. `Deliver` (server → client)
 
@@ -62,7 +62,7 @@ As Core §4.1, with no change to relay semantics: best-effort, no-misdelivery, d
 - **Input**: a `Payload`.
 - **Output**: none. One-way; the relay guarantees no acknowledgement, and a client owes none.
 
-This is the receiving half of the relay (Core §4.3): the server pushes to a node each payload relayed to it by one of its in-neighbors, as it arrives. The payload carries **no sender designator** and no reply path — receiving a message confers no ability to answer it (Architecture §3.1). Delivery is best-effort (Delivery §6); a client MUST NOT assume every relayed message will arrive, nor that its absence signals anything.
+This is the receiving half of the relay (Core §4.3): the server pushes to a node each payload relayed to it by one of its in-neighbors, as it arrives. The payload carries **no sender designator** and no reply path — receiving a message confers no ability to answer it (Architecture §3.1). Delivery is best-effort (Relay §6); a client MUST NOT assume every relayed message will arrive, nor that its absence signals anything.
 
 ### 5.3. `NeighborhoodUpdate` (server → client)
 
@@ -70,11 +70,11 @@ This is the receiving half of the relay (Core §4.3): the server pushes to a nod
 - **Input**: the node's new `NeighborhoodState`.
 - **Output**: none. One-way.
 
-This is the push path to neighborhood-state availability (Core §4.2, Delivery §5). When a node's neighborhood changes — an out-edge added, removed, or retargeted — the server MUST push the updated `NeighborhoodState` to the affected node, and SHOULD do so promptly after the change is committed (Delivery §5). The server SHOULD also push the initial state on establishment (Section 3). Because this profile pushes every change and the transport delivers them in order (Section 6), a client's most recently received state is always its current one — it stays current without polling.
+This is the push path to neighborhood-state availability (Core §4.2, Relay §5). When a node's neighborhood changes — an out-edge added, removed, or retargeted — the server MUST push the updated `NeighborhoodState` to the affected node, and SHOULD do so promptly after the change is committed (Relay §5). The server SHOULD also push the initial state on establishment (Section 3). Because this profile pushes every change and the transport delivers them in order (Section 6), a client's most recently received state is always its current one — it stays current without polling.
 
 ## 6. Ordering
 
-This profile assumes the transport delivers messages on a connection **in order** (WebSocket and TCP both do). Under that assumption the most recently received `NeighborhoodState` is the current one, and a client may treat each `NeighborhoodUpdate` as superseding the last without needing an explicit version. This profile therefore defines no neighborhood-state versioning of its own; should it ever be carried over an unordered transport, the versioning needed to distinguish newer state from older is deferred, with the rest of state versioning, to a future document (Core §3). Ordering of relayed `Deliver` payloads beyond what the connection provides is likewise out of scope (Delivery §7).
+This profile assumes the transport delivers messages on a connection **in order** (WebSocket and TCP both do). Under that assumption the most recently received `NeighborhoodState` is the current one, and a client may treat each `NeighborhoodUpdate` as superseding the last without needing an explicit version. This profile therefore defines no neighborhood-state versioning of its own; should it ever be carried over an unordered transport, the versioning needed to distinguish newer state from older is deferred, with the rest of state versioning, to a future document (Core §3). Ordering of relayed `Deliver` payloads beyond what the connection provides is likewise out of scope (Relay §7).
 
 ## 7. Security Considerations
 
@@ -91,7 +91,7 @@ This profile inherits Core §6 and Architecture §8, and adds little of its own 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
 - GRS RPC Common Core (`rpc-interface.md`).
 - Graph Relay System (GRS) Protocol (`architecture.md`).
-- GRS Delivery and Consistency (`delivery-and-consistency.md`).
+- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
 
 ### 8.2. Informative References
 

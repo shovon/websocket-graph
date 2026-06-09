@@ -4,9 +4,9 @@
 
 This document is a concrete **identity binding** for GRS. It answers, with a single definite rule, the identity-persistence axis the architecture leaves deferred (Architecture §3): a node's identity is **ephemeral and per-session** — minted fresh when a node is established, and never carried across a node's lifetime boundary — and additionally **globally unique** and **never reused**. It exists for implementers and derivers who want a fixed rule to build on rather than the open choice the base leaves them.
 
-It takes the base architecture's *default* — connection/session-scoped identity, a reconnect being a wholly new node (Architecture §3) — and strengthens it in exactly one direction the companions already permit (Delivery §2; designator-string §4): the per-session identifier is guaranteed distinct from every identifier any other node has ever held or will ever hold, and a retired identifier is never minted again. It does **not** take the other direction the axis offers: it provides **no** persistence across sessions (Section 7). A derivative wanting durable identity — for example a public key serving as a durable node identifier (Architecture §3) — is a different binding, answering the same axis the other way.
+It takes the base architecture's *default* — connection/session-scoped identity, a reconnect being a wholly new node (Architecture §3) — and strengthens it in exactly one direction the companions already permit (Relay §2; designator-string §4): the per-session identifier is guaranteed distinct from every identifier any other node has ever held or will ever hold, and a retired identifier is never minted again. It does **not** take the other direction the axis offers: it provides **no** persistence across sessions (Section 7). A derivative wanting durable identity — for example a public key serving as a durable node identifier (Architecture §3) — is a different binding, answering the same axis the other way.
 
-This identifier serves as the node's **designator** — the handle by which its in-neighbors address it (Architecture §2, Delivery §2) — so the binding fixes designator semantics as a consequence of fixing identity. It is **representation-agnostic** and composes with a representation binding such as `designator-string.md` (under which the identifier is a string). It is one binding among possible others, and is normative for implementations that adopt it. Section references of the form (Architecture §N) point into `architecture.md`, (Delivery §N) into `delivery-and-consistency.md`, and (Core §N) into `rpc-interface.md`.
+This identifier serves as the node's **designator** — the handle by which its in-neighbors address it (Architecture §2, Relay §2) — so the binding fixes designator semantics as a consequence of fixing identity. It is **representation-agnostic** and composes with a representation binding such as `designator-string.md` (under which the identifier is a string). It is one binding among possible others, and is normative for implementations that adopt it. Section references of the form (Architecture §N) point into `architecture.md`, (Relay §N) into `relay-and-neighborhood-semantics.md`, and (Core §N) into `rpc-interface.md`.
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ This identifier serves as the node's **designator** — the handle by which its 
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
-This document uses the terms **Server**, **Client**, **Node**, **out-neighbor**, **in-neighbor**, **neighborhood**, **neighborhood state**, and **Designator** as defined in Architecture §2 and refined in Delivery §2, and **session** as in Core §4.4. A **node identifier** is the value this binding fixes: the per-session, globally unique, never-reused identity of one node, which also serves as that node's designator.
+This document uses the terms **Server**, **Client**, **Node**, **out-neighbor**, **in-neighbor**, **neighborhood**, **neighborhood state**, and **Designator** as defined in Architecture §2 and refined in Relay §2, and **session** as in Core §4.4. A **node identifier** is the value this binding fixes: the per-session, globally unique, never-reused identity of one node, which also serves as that node's designator.
 
 ## 2. The Rule
 
@@ -61,10 +61,10 @@ This is what makes a stale identifier **unambiguously and permanently dead**. An
 
 ## 5. The Designator Is the Node's Identity
 
-Under this binding, a node's identifier **is** its designator: every in-neighbor that has the node as an out-neighbor denotes it by that one identifier (Delivery §2). Two consequences:
+Under this binding, a node's identifier **is** its designator: every in-neighbor that has the node as an out-neighbor denotes it by that one identifier (Relay §2). Two consequences:
 
-- **Per-state distinctness holds for free.** Because every node's identifier is globally unique, the designators of any node's out-neighbors are automatically distinct within every neighborhood state — the base requirement (Delivery §2) is met with no further effort.
-- **The designator carries cross-state meaning, within a lifetime.** Unlike the base designator, which fixes no meaning beyond a single neighborhood state (designator-string §3), this identifier is stable across the node's lifetime (Section 4). A client MAY therefore compare it across its own successive neighborhood states to recognize "the same out-neighbor" as the graph changes around it — the cross-state meaning the base leaves to a future layer (Delivery §2), supplied here for the node's lifetime only.
+- **Per-state distinctness holds for free.** Because every node's identifier is globally unique, the designators of any node's out-neighbors are automatically distinct within every neighborhood state — the base requirement (Relay §2) is met with no further effort.
+- **The designator carries cross-state meaning, within a lifetime.** Unlike the base designator, which fixes no meaning beyond a single neighborhood state (designator-string §3), this identifier is stable across the node's lifetime (Section 4). A client MAY therefore compare it across its own successive neighborhood states to recognize "the same out-neighbor" as the graph changes around it — the cross-state meaning the base leaves to a future layer (Relay §2), supplied here for the node's lifetime only.
 
 Because all of a node's in-neighbors share the one identifier for it, two of them can — out of band — discover that they address a common out-neighbor. This is inherent in giving the node a single identity and is intended; it is also an information exposure the per-edge base designator does not have (Section 8).
 
@@ -72,9 +72,9 @@ Whether the server also discloses a node's *own* identifier to it is out of scop
 
 ## 6. Resolution and No-Misdelivery
 
-Resolution is unchanged from the base: the server resolves a `Send` designator against the sender's **current** neighborhood and relays to the denoted out-neighbor, or discards (Delivery §3, §4). This binding does not touch that rule; it only constrains what identifiers the server may issue.
+Resolution is unchanged from the base: the server resolves a `Send` designator against the sender's **current** neighborhood and relays to the denoted out-neighbor, or discards (Relay §3, §4). This binding does not touch that rule; it only constrains what identifiers the server may issue.
 
-The interaction is wholly favorable. Because an identifier is never reused (Section 4), a `Send` carrying a stale identifier — one whose node has departed — resolves to nothing and is **discarded**, exactly as the base requires, with no possibility that it now denotes a different node. No-misdelivery (Delivery §3) holds as before, and the one residual hazard the base tolerates — a designator silently coming to denote a *different* out-neighbor after reuse — is eliminated outright. A client therefore needs no version or generation counter to tell a stale identifier from a current one: stale resolves to discard, permanently (Section 4).
+The interaction is wholly favorable. Because an identifier is never reused (Section 4), a `Send` carrying a stale identifier — one whose node has departed — resolves to nothing and is **discarded**, exactly as the base requires, with no possibility that it now denotes a different node. No-misdelivery (Relay §3) holds as before, and the one residual hazard the base tolerates — a designator silently coming to denote a *different* out-neighbor after reuse — is eliminated outright. A client therefore needs no version or generation counter to tell a stale identifier from a current one: stale resolves to discard, permanently (Section 4).
 
 ## 7. What This Binding Does Not Provide
 
@@ -96,7 +96,7 @@ This binding inherits Core §6 and Architecture §8, and — where it is realize
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
 - Graph Relay System (GRS) Protocol (`architecture.md`).
-- GRS Delivery and Consistency (`delivery-and-consistency.md`).
+- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
 - GRS RPC Common Core (`rpc-interface.md`).
 
 ### 9.2. Informative References
