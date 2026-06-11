@@ -111,6 +111,8 @@ Beyond the per-profile mechanisms of Sections 4.3 and 4.4, the following are lef
 - Whether, and how, an acceptance decision (Section 4.1) is surfaced, and whether any discard indication is reported (Relay §4).
 - Ordering of relayed payloads, buffering and retention of pending messages, the fate of messages held for a departing node, and any reliability or deduplication beyond the best-effort floor (Relay §6, §7).
 
+The way this document and its profiles **name** operations and **list** their abstract inputs is itself part of what is left open. An operation's name — `Send`, and those each profile adds (`Deliver`, `NeighborhoodUpdate`, `GetNeighborhood`, `Receive`, and the like) — is a label this specification uses to refer to the operation, not the token that selects it on the wire. The order in which an operation's inputs are listed — for `Send`, a `Designator` then a `Payload` — states *what the operation takes*, not the positions those inputs occupy in any concrete message. A binding (a profile, or a transport binding beneath it) fixes the concrete selector for each operation and the concrete layout of its inputs, and MAY choose both independently of the spelling and listing order used here, provided the operation's semantics (Section 4) are preserved. Nothing in how an operation is named or its inputs are ordered in this document constrains a concrete message shape.
+
 Clients requiring end-to-end guarantees — reliable delivery, ordering, acknowledgement, identity continuity across sessions, or a reply path to a node with no edge toward them — construct them above this interface (Architecture §3.2), not by expecting them from these operations.
 
 ## 6. Security Considerations
