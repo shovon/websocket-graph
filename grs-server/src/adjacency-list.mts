@@ -376,7 +376,10 @@ export function insertNode<K>(
 
 	details.sort(sortByDetail);
 
-	return insertNode(graph, { root: [details[0].nodeId], toInsert }, visited, {
+	const first = details[0];
+	if (!first) return [];
+
+	return insertNode(graph, { root: [first.nodeId], toInsert }, visited, {
 		depthCache: depthCache,
 		countCache: countCache,
 	});
@@ -442,7 +445,7 @@ export function deleteNode<K>(graph: Degree3Graph<K>, toDelete: K): K[] {
 				throw new Error("Why doesn't the given node exist it exist?");
 			for (let i = 0; i < neighbors.length; i++) {
 				const neighbor = neighbors[i];
-				if (neighbor !== null) {
+				if (neighbor != null && neighbor[0] != null) {
 					if (neighbor[0] === toDelete) {
 						neighbors[i] = null;
 						modifiedNodes.add(child[0]);
@@ -463,6 +466,8 @@ export function deleteNode<K>(graph: Degree3Graph<K>, toDelete: K): K[] {
 	if (orphans.length <= 1) return [...modifiedNodes];
 
 	const [dominant, ...subordinates] = orphans;
+
+	if (!dominant) return [];
 
 	const dominantCentroid = findCentroid<K>(graph, dominant[0]);
 
@@ -506,7 +511,7 @@ export function* breadthFirstTraverse<K>(
 	const queue: K[] = [root];
 	const visited = new Set<K>();
 	while (queue.length > 0) {
-		const next = queue[0];
+		const next = queue[0]!;
 		queue.shift();
 		const neighbors = graph.get(next);
 		if (!neighbors) throw new Error(`Node at ${next} not found`);
