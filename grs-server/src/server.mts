@@ -1,6 +1,12 @@
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import { type Degree3Graph } from "./adjacency-list.mts";
+import {
+  insertNode,
+  type Degree3Graph,
+  type Degree3Adjacencies,
+  findCentroid,
+  deleteNode,
+} from "./adjacency-list.mts";
 
 const server = createServer((req, res) => {
   res.writeHead(200, { "content-type": "text/plain" });
@@ -9,9 +15,32 @@ const server = createServer((req, res) => {
 
 const wss = new WebSocketServer({ server });
 
+class CentroidGraph<K> {
+  root: [K] | null = null;
+  graph: Degree3Graph<K> = new Map();
+
+  insertValue(value: K) {
+    insertNode(
+      this.graph,
+      {
+        root: this.root,
+        toInsert: value,
+      },
+      new Set(),
+      { depthCache: new Map(), countCache: new Map() },
+    );
+    this.root = [findCentroid(this.graph, value)];
+  }
+
+  deleteValue(value: K) {
+    deleteNode(this.graph, value);
+    this.root = [findCentroid(this.graph, value)];
+  }
+}
+
 interface GraphMeta {
   count: number;
-  graph: Degree3Graph<string>;
+  graph: CentroidGraph<WebSocket>;
 }
 
 // Graphs.
@@ -31,4 +60,23 @@ wss.on("connection", (ws, req) => {
   }
 
   const id = decodeURIComponent(match[1]);
+
+  let graphMeta: GraphMeta | undefined = graphs.get(id);
+  if (!graphMeta) {
+    graphMeta = { count: 0, graph: new CentroidGraph<WebSocket>() };
+  }
+  const localNodeId = `${graphMeta.count}`;
+  graphMeta.count++;
+
+  const deleteNode = () => {
+    graphMeta.graph.deleteValue(ws);
+  };
+
+  const addNode = () => {
+    graphMeta.graph.insertValue(ws);
+  };
+
+  const onClose = deleteNode;
+
+  wss.on("close", onClose);
 });
