@@ -1,0 +1,4 @@
+Sending
+	Path not known? Flood and tack on own ID to build said path
+	Path known?
+		Contains "tacked on" path? Send path response to the head of path
