@@ -4,11 +4,9 @@
 
 This document is **non-normative**. It is the node-level companion to Path Emergence (`path-emergence.md`). Where that memo stands above the graph and watches a path form across the whole network, this one stands inside a single node and watches it decide. Same algorithm, opposite vantage. It fixes no wire format, mandates no field, and defines no conformance surface; when a future normative companion pins down the packet formats, the loop-detection rules, and the timeouts, that document carries the requirements, and this one carries the reasoning they were derived from.
 
-Read it for the *local rule* and for why each branch of that rule is shaped the way it is. Nothing here uses RFC 2119 keywords, and where it appears to instruct a node, read "this is the behavior the requirements were built to produce," not "you must." Everything its bird's-eye companions assert from above — the two trails, the three legs, the quiet after the flood — this memo tries to *earn* from below, by showing the one rule that, run by everyone at once, adds up to all of it.
+Read it for the *local rule* and for why each branch of that rule is shaped the way it is. Everything its bird's-eye companions assert from above — the two trails, the three legs, the quiet after the flood — this memo tries to *earn* from below, by showing the one rule that, run by everyone at once, adds up to all of it.
 
-The register is the discursive one this corpus reserves for rationale. It is allowed to anthropomorphize the node — to let it "ask," "know," "decline" — because a node's-eye account is clearer when the node is a character, and to repeat a point when the point is load-bearing. The aim is for a person to be able to sit inside one node and feel why it does what it does, not for a machine to parse a procedure.
-
-Section references resolve by name, not by location. Those of the form (Architecture §N) point into `../architecture.md`, (Relay §N) into `../relay-and-neighborhood-semantics.md`, and (Designator §N) into `../designator-string.md` — substrate documents that sit one level up from this folder. Companion overlay memos in this same folder are cited by filename, such as `path-emergence.md` and `path-completion.md`.
+Section references of the form (Architecture §N) point into `../architecture.md`, (Relay §N) into `../relay-and-neighborhood-semantics.md`, and (Designator §N) into `../designator-string.md`; companion overlay memos are cited by filename.
 
 ## Abstract
 

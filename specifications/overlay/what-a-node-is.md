@@ -6,9 +6,7 @@ This document is **non-normative**. It is an overview, and it means to be the fr
 
 Its method is worth naming, because it is the document's whole reason for existing. The other memos lean, again and again, on a phrase they treat as obvious — *"a node just runs one rule," "the reply is only another origination," "there is no dance, only the rule."* They say it the way a textbook says *the proof is left as an exercise for the reader*: true, and safe to assert, but unwritten. This memo is the supplied proof. It writes the node out in full, so that the thing the rest of the corpus rests its weight on is on the page rather than in the reader's trust.
 
-The register is the discursive one this corpus reserves for rationale. It is allowed to argue, to use a metaphor, and to repeat a load-bearing point on purpose. Nothing here uses RFC 2119 keywords; where it appears to instruct, read "this is the model the other memos were built on," not "you must."
-
-Section references resolve by name, not by location. Those of the form (Emergence §N) point into `path-emergence.md`, (Completion §N) into `path-completion.md`, and (Sending §N) into `sending-rule.md` — companions in this same folder. (Architecture §N) points into `../architecture.md` and (Payload §N) into `../payload-string.md` — substrate documents one level up.
+Section references of the form (Emergence §N) point into `path-emergence.md`, (Completion §N) into `path-completion.md`, and (Sending §N) into `sending-rule.md`; (Architecture §N) into `../architecture.md` and (Payload §N) into `../payload-string.md`.
 
 ## Abstract
 
