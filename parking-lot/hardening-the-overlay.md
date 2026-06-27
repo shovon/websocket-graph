@@ -2,7 +2,13 @@
 
 ## Status of This Memo
 
-This document is **non-normative**. It specifies nothing, requires nothing, and conforms to nothing. It is the last memo of the overlay set, and the one to read once the others have done their work — ideally when you are no longer merely understanding the overlay but preparing to implement one fit to deploy.
+This document is **non-normative**, and it is **parked**: imported material, not discovered floor.
+
+> **Do not treat this as part of the overlay corpus, and do not let it into the context of any first-principles derivation of the overlay.** It was extracted from an exercise that asked "what are the non-negotiables?" It surfaces real concerns and is worth keeping, which is why it was not deleted — but it reasons from a threat model and from deployment best-practice, *importing* its conclusions instead of *deriving* them from the floor the way the earned memos do. Written in their same confident "this is forced" voice, left among them it would impersonate a conclusion and quietly anchor work that was meant to begin from first principles. So it has been moved out of `specifications/overlay/` to `parking-lot/` until it can be rewritten.
+>
+> **Bar for re-admission to the corpus:** each "non-negotiable" below must be re-derived as a specific grant of Path Emergence §2 *coming due* — the unique-ID-as-mere-label grant, or the perfect-world grant. What hangs off a failing grant is floor; two claims look like they qualify (identity becoming a *key* when the label grant comes due; the untrusted-carrier stance when the perfect-world grant comes due). What does not hang off a failing grant — acknowledgement design, multipath, the layering-versus-versioning detail, and the like — is engineering judgment, not discovered necessity, and stays parked. Doing that sort is the work this memo awaits.
+
+What follows is the memo as it was drafted; read it as raw material in that light.
 
 The mechanism memos (`path-emergence.md`, `path-completion.md`, `sending-rule.md`) show a node reaching a non-neighbor and getting an answer back, and they do it in a deliberately perfect world: every node honest, every name simply granted. This memo is where that world ends. It is the **hardening** — what you add, and why, once you stop assuming that nobody lies, drops, or snoops. None of it changes the dance the mechanism memos describe; all of it bolts on. That is exactly why it waits until here: pulling it forward burdens the mechanism with weight it need not carry to be understood, and the corpus is deliberately built so that you can follow the whole scheme without any of it. Read this when you are ready to leave the perfect world — and not before.
 
@@ -10,7 +16,7 @@ When you want to know *why the choices implementation forces take the shape they
 
 A word on register, since it is the document's whole reason for existing: a conformance spec is prose pressed into service as code, and it pays for its precision in readability. That price is worth paying where interoperability is at stake and not a penny elsewhere. This memo is the elsewhere. It is allowed to argue, to hedge, to repeat itself for emphasis, and to address a human rather than a parser. If it reads like an essay, that is not a lapse; it is the assignment.
 
-Section references resolve by name, not by location. Those of the form (Architecture §N) point into `../architecture.md`, (Relay §N) into `../relay-and-neighborhood-semantics.md`, (Designator §N) into `../designator-string.md`, and (Payload §N) into `../payload-string.md` — substrate documents that sit one level up from this folder. Companion overlay memos in this same folder are cited by filename.
+Section references resolve by name, not by location, and they point into the live corpus this memo was extracted from. Those of the form (Architecture §N) point into `../specifications/architecture.md`, (Relay §N) into `../specifications/relay-and-neighborhood-semantics.md`, (Designator §N) into `../specifications/designator-string.md`, and (Payload §N) into `../specifications/payload-string.md`. Overlay memos once cited as siblings — `path-emergence.md`, `path-completion.md`, `sending-rule.md`, and the rest — now live in `../specifications/overlay/`; `server-stewardship.md` sits beside this one here in `parking-lot/`. These anchors are not maintained while the memo is parked and may have drifted.
 
 ## Abstract
 
