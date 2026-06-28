@@ -174,6 +174,6 @@ This aspirational specification draws from concepts in graph theory and networke
 ### 11.2. Informative References
 
 - GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`): companion specification fixing neighborhood-state availability, designator semantics, and the delivery contract.
-- GRS RPC Common Core (`rpc-interface.md`): companion specification fixing the common abstract data, operation semantics, and server responsibilities of the relay interface, specialized by one of two transport profiles:
-  - GRS RPC Pull Profile (`rpc-pull-profile.md`): for request/response transports (e.g. HTTP), layered on the GRS RPC Pull Session Layer (`rpc-pull-session.md`), which synthesizes a session over a connectionless transport.
-  - GRS RPC Pushable Profile (`rpc-push-profile.md`): for full-duplex transports (e.g. WebSocket, TCP), where the connection is itself the session.
+- GRS RPC Common Core (`conformance/interface-profiles/rpc-interface.md`): companion specification fixing the common abstract data, operation semantics, and server responsibilities of the relay interface, specialized by one of two transport profiles:
+  - GRS RPC Pull Profile (`conformance/interface-profiles/rpc-pull-profile.md`): for request/response transports (e.g. HTTP), layered on the GRS RPC Pull Session Layer (`conformance/interface-profiles/rpc-pull-session.md`), which synthesizes a session over a connectionless transport.
+  - GRS RPC Pushable Profile (`conformance/interface-profiles/rpc-push-profile.md`): for full-duplex transports (e.g. WebSocket, TCP), where the connection is itself the session.

@@ -2,14 +2,14 @@
 
 ## Status of This Memo
 
-This document is a companion specification to the *Graph Relay System (GRS) Protocol* (`architecture.md`) and its *Relay and Neighborhood Semantics* companion (`relay-and-neighborhood-semantics.md`). It fixes the **common core** of the GRS remote-procedure interface: the parts that do not depend on how a client and server exchange messages — the abstract data, the semantics of the operations a client invokes on the server, and the two server-owed responsibilities the relay rests on.
+This document is a companion specification to the *Graph Relay System (GRS) Protocol* (`../../architecture.md`) and its *Relay and Neighborhood Semantics* companion (`../../relay-and-neighborhood-semantics.md`). It fixes the **common core** of the GRS remote-procedure interface: the parts that do not depend on how a client and server exchange messages — the abstract data, the semantics of the operations a client invokes on the server, and the two server-owed responsibilities the relay rests on.
 
 It deliberately does **not** fix how server-originated events reach a client, nor how a node is established and its departure detected. Those depend on whether the transport can carry server-initiated messages, and they are fixed by one of two companion **profiles**, exactly one of which an implementation adopts:
 
 - **GRS RPC Pull Profile** (`rpc-pull-profile.md`) — for request/response, client-initiated-only transports (e.g. HTTP), where the server cannot push and a session must be synthesized from independent requests.
 - **GRS RPC Pushable Profile** (`rpc-push-profile.md`) — for full-duplex, session-oriented transports (e.g. WebSocket, raw TCP), where the server can push and a connection *is* the session.
 
-This document is normative for both profiles. Where the two profiles differ, this core states the *responsibility* and defers the *mechanism* to the profile; a profile MUST fix each such mechanism concretely (it is not left open within a profile). Section references of the form (Architecture §N) point into `architecture.md`; (Relay §N) into `relay-and-neighborhood-semantics.md`.
+This document is normative for both profiles. Where the two profiles differ, this core states the *responsibility* and defers the *mechanism* to the profile; a profile MUST fix each such mechanism concretely (it is not left open within a profile). Section references of the form (Architecture §N) point into `../../architecture.md`; (Relay §N) into `../../relay-and-neighborhood-semantics.md`.
 
 ## Table of Contents
 
@@ -131,8 +131,8 @@ Authentication of the caller, admission control, and rejection of spoofed design
 ### 7.1. Normative References
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
-- Graph Relay System (GRS) Protocol (`architecture.md`).
-- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
+- Graph Relay System (GRS) Protocol (`../../architecture.md`).
+- GRS Relay and Neighborhood Semantics (`../../relay-and-neighborhood-semantics.md`).
 
 ### 7.2. Informative References
 

@@ -2,11 +2,11 @@
 
 ## Status of This Memo
 
-This document is a concrete **representation binding** for the `Designator` abstract type of the *GRS RPC Common Core* (`rpc-interface.md`, Core §3), whose semantics are fixed by *GRS Relay and Neighborhood Semantics* (`relay-and-neighborhood-semantics.md`, Relay §2). It fixes one decision those documents deliberately leave open (Core §3, §5; Relay §7): the **concrete form a designator takes**. Under this binding, a designator is a **string**.
+This document is a concrete **representation binding** for the `Designator` abstract type of the *GRS RPC Common Core* (`../interface-profiles/rpc-interface.md`, Core §3), whose semantics are fixed by *GRS Relay and Neighborhood Semantics* (`../../relay-and-neighborhood-semantics.md`, Relay §2). It fixes one decision those documents deliberately leave open (Core §3, §5; Relay §7): the **concrete form a designator takes**. Under this binding, a designator is a **string**.
 
 It fixes representation only. It changes none of the designator's semantics — the per-state distinctness requirement and the no-misdelivery guarantee hold exactly as the companions state them; this document restates them in terms of the string form and adds nothing to them. In particular, it does **not** prescribe how a server generates designators: the requirement that a node's out-neighbors be distinctly designated is preserved, but the *mechanism* by which an implementation satisfies it is left to the implementer (Section 4). Like the companions, it fixes nothing about what a designator means from one neighborhood state to the next; that is left to a future layer (Relay §2, §4).
 
-It is one binding among possible others — an implementation MAY represent a designator differently — and is normative for implementations that adopt the string representation. Section references of the form (Core §N) point into `rpc-interface.md`, (Relay §N) into `relay-and-neighborhood-semantics.md`, and (Architecture §N) into `architecture.md`.
+It is one binding among possible others — an implementation MAY represent a designator differently — and is normative for implementations that adopt the string representation. Section references of the form (Core §N) point into `../interface-profiles/rpc-interface.md`, (Relay §N) into `../../relay-and-neighborhood-semantics.md`, and (Architecture §N) into `../../architecture.md`.
 
 ## Table of Contents
 
@@ -85,11 +85,11 @@ This binding inherits the considerations of Core §6 and Architecture §8 and ad
 ### 8.1. Normative References
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
-- GRS RPC Common Core (`rpc-interface.md`).
-- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
-- Graph Relay System (GRS) Protocol (`architecture.md`).
+- GRS RPC Common Core (`../interface-profiles/rpc-interface.md`).
+- GRS Relay and Neighborhood Semantics (`../../relay-and-neighborhood-semantics.md`).
+- Graph Relay System (GRS) Protocol (`../../architecture.md`).
 
 ### 8.2. Informative References
 
 - RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format.
-- GRS RPC Pull Profile (`rpc-pull-profile.md`) and GRS RPC Pushable Profile (`rpc-push-profile.md`): the profiles whose `Send` and neighborhood-state operations carry designators in this representation.
+- GRS RPC Pull Profile (`../interface-profiles/rpc-pull-profile.md`) and GRS RPC Pushable Profile (`../interface-profiles/rpc-push-profile.md`): the profiles whose `Send` and neighborhood-state operations carry designators in this representation.

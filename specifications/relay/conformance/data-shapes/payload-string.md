@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a concrete **representation binding** for the `Payload` abstract type of the *GRS RPC Common Core* (`rpc-interface.md`, Core §3). It fixes one decision the core and its companions deliberately leave open (Core §3, §5): the concrete form of the value a node sends to an out-neighbor — the **thing the relay carries**. Under this binding, that value is a **string**.
+This document is a concrete **representation binding** for the `Payload` abstract type of the *GRS RPC Common Core* (`../interface-profiles/rpc-interface.md`, Core §3). It fixes one decision the core and its companions deliberately leave open (Core §3, §5): the concrete form of the value a node sends to an out-neighbor — the **thing the relay carries**. Under this binding, that value is a **string**.
 
 A payload is **what is carried, not the thing that carries it.** How a payload is framed on the wire, bounded in size, and packed into whatever envelope conveys it across the transport is a separate concern, deliberately out of scope here and deferred (Section 5). This binding speaks only to the carried value: that it is a string, that the server does not interpret it, and that it is relayed verbatim.
 
@@ -10,7 +10,7 @@ It is the mirror image of the *GRS Designator String Representation* (`designato
 
 It fixes representation only. It changes none of the relay's semantics — best-effort delivery, no-misdelivery, and the server's content-agnostic role hold exactly as the companions state them (Architecture §6, Relay §3, §6). In particular it imposes **no constraint on a payload's contents**: what a payload *means* is the application's, constructed above this interface (Architecture §3.2), and the server neither inspects nor interprets it.
 
-It is one binding among possible others — an implementation MAY represent a payload differently (for example, as an opaque octet string) — and is normative for implementations that adopt the string representation. Section references of the form (Core §N) point into `rpc-interface.md`, (Relay §N) into `relay-and-neighborhood-semantics.md`, and (Architecture §N) into `architecture.md`.
+It is one binding among possible others — an implementation MAY represent a payload differently (for example, as an opaque octet string) — and is normative for implementations that adopt the string representation. Section references of the form (Core §N) point into `../interface-profiles/rpc-interface.md`, (Relay §N) into `../../relay-and-neighborhood-semantics.md`, and (Architecture §N) into `../../architecture.md`.
 
 ## Table of Contents
 
@@ -82,11 +82,11 @@ This binding inherits the considerations of Core §6 and Architecture §8 and ad
 ### 7.1. Normative References
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
-- GRS RPC Common Core (`rpc-interface.md`).
-- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
-- Graph Relay System (GRS) Protocol (`architecture.md`).
+- GRS RPC Common Core (`../interface-profiles/rpc-interface.md`).
+- GRS Relay and Neighborhood Semantics (`../../relay-and-neighborhood-semantics.md`).
+- Graph Relay System (GRS) Protocol (`../../architecture.md`).
 
 ### 7.2. Informative References
 
 - GRS Designator String Representation (`designator-string.md`): the companion representation binding this one mirrors, fixing the `Designator` type as a string and making it opaque to the client as this binding makes the `Payload` opaque to the server.
-- GRS RPC Pull Profile (`rpc-pull-profile.md`) and GRS RPC Pushable Profile (`rpc-push-profile.md`): the profiles whose `Send`, `Deliver`, and `Receive` operations carry payloads in this representation.
+- GRS RPC Pull Profile (`../interface-profiles/rpc-pull-profile.md`) and GRS RPC Pushable Profile (`../interface-profiles/rpc-push-profile.md`): the profiles whose `Send`, `Deliver`, and `Receive` operations carry payloads in this representation.

@@ -67,7 +67,7 @@ The server MAY satisfy this in either of two ways, and the protocol is indiffere
 
 Clients SHOULD be able to query the server for their current neighborhood state at any time, and the server MUST respond accurately, reflecting the latest committed configuration. The availability of updated state — by whichever mechanism — is what makes the system eventually consistent.
 
-**Ordering across successive states is deferred.** How a client tells a newer neighborhood state from an older one — versioning, ordering, or freshness of successive states — is not fixed by this revision and is left to a future layer (consistent with the deferral in `rpc-interface.md`, Core §3). This document fixes only that each state the server makes available reflects the latest committed configuration at the moment it is made available (above); it places no requirement on a client to reconcile one state against another.
+**Ordering across successive states is deferred.** How a client tells a newer neighborhood state from an older one — versioning, ordering, or freshness of successive states — is not fixed by this revision and is left to a future layer (consistent with the deferral in `conformance/interface-profiles/rpc-interface.md`, Core §3). This document fixes only that each state the server makes available reflects the latest committed configuration at the moment it is made available (above); it places no requirement on a client to reconcile one state against another.
 
 No specific mechanism for making state available is prescribed: push notifications, polling, or other methods are all permitted, provided the availability, recency, and ordering requirements above are met.
 
@@ -104,4 +104,4 @@ Clients requiring end-to-end guarantees — reliable delivery, ordering, acknowl
 
 ### Informative References
 
-- GRS RPC Common Core (`rpc-interface.md`): maps the state-availability and relay semantics fixed here onto abstract operations, specialized by the Pull (`rpc-pull-profile.md`) and Pushable (`rpc-push-profile.md`) transport profiles.
+- GRS RPC Common Core (`conformance/interface-profiles/rpc-interface.md`): maps the state-availability and relay semantics fixed here onto abstract operations, specialized by the Pull (`conformance/interface-profiles/rpc-pull-profile.md`) and Pushable (`conformance/interface-profiles/rpc-push-profile.md`) transport profiles.

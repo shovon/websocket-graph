@@ -12,7 +12,7 @@ It fixes three things and no more:
 
 It deliberately does **not** fix *which graph* a connection joins, *how a server is addressed*, or *what a connection URL looks like*. A connection under this binding joins exactly **one graph**; how many graphs a server hosts and how each is named is the concern of a companion, the *GRS WebSocket Resource* document (`websocket-resource.md`), and is out of scope here (Section 2). This binding is complete and correct for a server that hosts a single graph, which needs that companion not at all.
 
-It is normative for implementations claiming the GRS WebSocket Transport Binding. Section references of the form (Binding §N) point into `oneway-json-array-binding.md`; (Shape §N) into `json-array-message-shape.md`; (Push §N) into `rpc-push-profile.md`; (Choreography §N) into `push-based-choreography.md`; (Core §N) into `rpc-interface.md`; (Relay §N) into `relay-and-neighborhood-semantics.md`; (Architecture §N) into `architecture.md`. The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" are to be interpreted as described in RFC 2119.
+It is normative for implementations claiming the GRS WebSocket Transport Binding. Section references of the form (Binding §N) point into `oneway-json-array-binding.md`; (Shape §N) into `../data-shapes/json-array-message-shape.md`; (Push §N) into `../interface-profiles/rpc-push-profile.md`; (Choreography §N) into `push-based-choreography.md`; (Core §N) into `../interface-profiles/rpc-interface.md`; (Relay §N) into `../../relay-and-neighborhood-semantics.md`; (Architecture §N) into `../../architecture.md`. The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" are to be interpreted as described in RFC 2119.
 
 ## Table of Contents
 
@@ -151,11 +151,11 @@ This binding inherits the considerations of the JSON-array binding (Binding §9)
 - RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format.
 - RFC 3629: UTF-8, a transformation format of ISO 10646.
 - GRS One-Way Pushable JSON-Array Binding (`oneway-json-array-binding.md`).
-- GRS JSON-Array Message Shape (`json-array-message-shape.md`).
-- GRS RPC Pushable Profile (`rpc-push-profile.md`).
-- GRS RPC Common Core (`rpc-interface.md`).
-- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
-- Graph Relay System (GRS) Protocol (`architecture.md`).
+- GRS JSON-Array Message Shape (`../data-shapes/json-array-message-shape.md`).
+- GRS RPC Pushable Profile (`../interface-profiles/rpc-push-profile.md`).
+- GRS RPC Common Core (`../interface-profiles/rpc-interface.md`).
+- GRS Relay and Neighborhood Semantics (`../../relay-and-neighborhood-semantics.md`).
+- Graph Relay System (GRS) Protocol (`../../architecture.md`).
 
 ### 9.2. Informative References
 

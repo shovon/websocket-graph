@@ -109,8 +109,8 @@ This profile inherits Core §6 and Architecture §8. Any credential the session 
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels.
 - GRS RPC Common Core (`rpc-interface.md`).
-- Graph Relay System (GRS) Protocol (`architecture.md`).
-- GRS Relay and Neighborhood Semantics (`relay-and-neighborhood-semantics.md`).
+- Graph Relay System (GRS) Protocol (`../../architecture.md`).
+- GRS Relay and Neighborhood Semantics (`../../relay-and-neighborhood-semantics.md`).
 
 ### 8.2. Informative References
 
