@@ -2,9 +2,9 @@
 
 ## Status of This Memo
 
-This document is a concrete **representation binding** for the `Designator` abstract type of the *GRS RPC Common Core* (`../interface-profiles/rpc-interface.md`, Core §3), whose semantics are fixed by *GRS Relay and Neighborhood Semantics* (`../../relay-and-neighborhood-semantics.md`, Relay §2). It fixes one decision those documents deliberately leave open (Core §3, §5; Relay §7): the **concrete form a designator takes**. Under this binding, a designator is a **string**.
+This document is a concrete **representation binding** for the `Designator` abstract type of the _GRS RPC Common Core_ (`../interface-profiles/rpc-interface.md`, Core §3), whose semantics are fixed by _GRS Relay and Neighborhood Semantics_ (`../../relay-and-neighborhood-semantics.md`, Relay §2). It fixes one decision those documents deliberately leave open (Core §3, §5; Relay §7): the **concrete form a designator takes**. Under this binding, a designator is a **string**.
 
-It fixes representation only. It changes none of the designator's semantics — the per-state distinctness requirement and the no-misdelivery guarantee hold exactly as the companions state them; this document restates them in terms of the string form and adds nothing to them. In particular, it does **not** prescribe how a server generates designators: the requirement that a node's out-neighbors be distinctly designated is preserved, but the *mechanism* by which an implementation satisfies it is left to the implementer (Section 4). Like the companions, it fixes nothing about what a designator means from one neighborhood state to the next; that is left to a future layer (Relay §2, §4).
+It fixes representation only. It changes none of the designator's semantics — the per-state distinctness requirement and the no-misdelivery guarantee hold exactly as the companions state them; this document restates them in terms of the string form and adds nothing to them. In particular, it does **not** prescribe how a server generates designators: the requirement that a node's out-neighbors be distinctly designated is preserved, but the _mechanism_ by which an implementation satisfies it is left to the implementer (Section 4). Like the companions, it fixes nothing about what a designator means from one neighborhood state to the next; that is left to a future layer (Relay §2, §4).
 
 It is one binding among possible others — an implementation MAY represent a designator differently — and is normative for implementations that adopt the string representation. Section references of the form (Core §N) point into `../interface-profiles/rpc-interface.md`, (Relay §N) into `../../relay-and-neighborhood-semantics.md`, and (Architecture §N) into `../../architecture.md`.
 
@@ -38,9 +38,9 @@ This binding ascribes **no internal structure** to the string. Any structure a p
 
 A designator string is an **opaque token**. A client MUST treat it as such: it MUST NOT parse it, interpret its bytes, infer a neighbor's identity, position, or count from it, order designators, or synthesize a designator of its own. The only operations a client may perform on a designator are:
 
-1. **Select** a designator verbatim from its *current* neighborhood state (Relay §5), to name the out-neighbor that state associates with it.
+1. **Select** a designator verbatim from its _current_ neighborhood state (Relay §5), to name the out-neighbor that state associates with it.
 2. **Pass** that designator verbatim as the address of a `Send` (Core §4.1).
-3. **Compare for equality**, *within a single neighborhood state*, to tell that state's out-neighbors apart — the distinctness this binding guarantees (Section 4).
+3. **Compare for equality**, _within a single neighborhood state_, to tell that state's out-neighbors apart — the distinctness this binding guarantees (Section 4).
 
 This binding fixes no meaning for a designator beyond the single neighborhood state in which it appears, and likewise fixes no relationship between designators drawn from different states. Whether designators may be compared across states, and what such a comparison would mean, is not defined here; a client that needs continuity of identity across neighborhood changes constructs it above this interface (Architecture §3.2), and a future layer MAY give designators cross-state meaning (Relay §2).
 
@@ -55,13 +55,13 @@ Within a node's **single current neighborhood state**, the server MUST assign **
 - UUIDs;
 - an opaque hash of a server-internal neighbor key.
 
-The distinctness requirement is the *only* uniqueness this binding mandates. Consistent with Relay §2, a server is **not** required to make a designator globally unique, persistent across reconnection, or stable across a node's neighborhood changes. A server MAY reuse a string to denote a different out-neighbor in a later state, and MAY change the string that denotes a given out-neighbor from one state to the next.
+The distinctness requirement is the _only_ uniqueness this binding mandates. Consistent with Relay §2, a server is **not** required to make a designator globally unique, persistent across reconnection, or stable across a node's neighborhood changes. A server MAY reuse a string to denote a different out-neighbor in a later state, and MAY change the string that denotes a given out-neighbor from one state to the next.
 
 An implementation MAY provide guarantees stronger than per-state distinctness — stability across states, global uniqueness, unguessability (Section 7), or persistence across a node's session boundary, the last where a derived identity model supplies a durable node identity (Relay §2, Architecture §3) — and, if it does, SHOULD document them. Absent such a documented guarantee, this binding provides none beyond per-state distinctness, and what may be built on a stronger guarantee is a matter for the layer that defines it (Relay §2).
 
 ## 5. Resolution and Matching
 
-The server resolves the designator carried on a `Send` by **exact string equality** (Section 2) against the sending node's *current* neighborhood state:
+The server resolves the designator carried on a `Send` by **exact string equality** (Section 2) against the sending node's _current_ neighborhood state:
 
 - if exactly one current out-neighbor is denoted by an equal designator, the server relays the payload to that out-neighbor;
 - otherwise — no current out-neighbor's designator is equal, because the string is malformed, was drawn from an earlier neighborhood state, or simply never denoted one — the server **discards** the payload.
@@ -76,7 +76,7 @@ This binding fixes the abstract form (a string of Unicode code points); the wire
 
 This binding inherits the considerations of Core §6 and Architecture §8 and adds only what the string representation makes concrete.
 
-- **Designators are not capabilities, and their secrecy is not the safety mechanism.** No-misdelivery rests on resolving every `Send` against the caller's *current* neighborhood (Section 5, Relay §3), not on a designator being unguessable. A client can only `Send` as its own node (Core §6, self-scoping) and only to that node's current out-neighbors; a guessed or forged string therefore relays only if it already denotes one of the caller's *own* current out-neighbors, and is otherwise discarded. Consequently an implementation MAY use predictable designators (e.g. `"0"`, `"1"`, `"2"`) without enabling misdelivery or reach to a non-neighbor.
+- **Designators are not capabilities, and their secrecy is not the safety mechanism.** No-misdelivery rests on resolving every `Send` against the caller's _current_ neighborhood (Section 5, Relay §3), not on a designator being unguessable. A client can only `Send` as its own node (Core §6, self-scoping) and only to that node's current out-neighbors; a guessed or forged string therefore relays only if it already denotes one of the caller's _own_ current out-neighbors, and is otherwise discarded. Consequently an implementation MAY use predictable designators (e.g. `"0"`, `"1"`, `"2"`) without enabling misdelivery or reach to a non-neighbor.
 - **Predictable designators may leak structure.** A scheme whose designators expose neighbor counts, positions, or churn (e.g. dense integers) may reveal information about a node's neighborhood to its holder. An implementation that wishes to avoid this MAY mint opaque, high-entropy designators instead; this is a confidentiality choice, not a correctness one (the previous point still holds either way).
 - **Oversized input.** Because a client echoes designators back on `Send` (Section 3), a server MUST guard against resource exhaustion from over-long or malformed designator strings on input, independent of the (non-)match that resolution (Section 5) will produce. Concrete length limits are a transport/deployment concern (Relay §7).
 

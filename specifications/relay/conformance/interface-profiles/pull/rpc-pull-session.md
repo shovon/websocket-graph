@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document specifies **one mechanism** for a **session** over a request/response, client-initiated-only transport (HTTP is the archetype): it synthesizes the thing such a transport lacks natively but a persistent connection supplies for free — a session with a definite beginning, a carried identity, a liveness notion, and a definite end. The *GRS RPC Pull Profile* (`rpc-pull-profile.md`) requires such a session but does not mandate this mechanism; this document is one conforming realization the profile MAY be paired with, not a layer it depends on by name.
+This document specifies **one mechanism** for a **session** over a request/response, client-initiated-only transport (HTTP is the archetype): it synthesizes the thing such a transport lacks natively but a persistent connection supplies for free — a session with a definite beginning, a carried identity, a liveness notion, and a definite end. The _GRS RPC Pull Profile_ (`rpc-pull-profile.md`) requires such a session but does not mandate this mechanism; this document is one conforming realization the profile MAY be paired with, not a layer it depends on by name.
 
 It plays, for a connectionless transport, the role a connection plays for the Pushable Profile (`rpc-push-profile.md`). The relationship is the one TCP has to an application: TCP establishes, identifies, keeps alive, and tears down a connection, and the application rides on top without re-implementing any of it. This mechanism plays TCP's role where the transport itself will not.
 
@@ -12,10 +12,7 @@ This document is deliberately **GRS-agnostic**. It knows nothing of nodes, neigh
 
 1. Terminology
 2. The Session Abstraction
-3. Operations
-   3.1. `Establish` (client → server)
-   3.2. In-Session Request
-   3.3. `Close` (client → server)
+3. Operations 3.1. `Establish` (client → server) 3.2. In-Session Request 3.3. `Close` (client → server)
 4. Liveness and Timeout
 5. What This Layer Does Not Provide
 6. Security Considerations
@@ -40,7 +37,7 @@ The layer provides the upper layer with four things, and nothing more:
 3. **Liveness.** A bound on how long a session persists without activity, refreshed by use (Section 4). Analogue: keepalive.
 4. **Teardown.** A definite end, whether requested by the client or imposed on timeout (Sections 3.3, 4). Analogue: an active close / connection reset.
 
-It exposes session lifecycle to the upper layer as two events — *session established* and *session ended* — and authenticates in-session requests on the upper layer's behalf. The upper layer does the rest. This layer never inspects a request body and never originates a message to the client except as the response to a request (Section 5).
+It exposes session lifecycle to the upper layer as two events — _session established_ and _session ended_ — and authenticates in-session requests on the upper layer's behalf. The upper layer does the rest. This layer never inspects a request body and never originates a message to the client except as the response to a request (Section 5).
 
 ## 3. Operations
 
@@ -65,19 +62,19 @@ This layer treats the request and response bodies as opaque. Their structure and
 - **Input**: a valid SID.
 - **Output**: none required.
 
-Ends the session: the server invalidates the SID and emits the *session ended* event to the upper layer. After `Close`, the SID is no longer valid and any later request bearing it MUST be rejected (Section 3.2). `Close` is the graceful counterpart to timeout (Section 4); the two are equivalent in effect, differing only in promptness. Supporting `Close` is RECOMMENDED but a client that simply stops issuing requests still ends its session by timeout.
+Ends the session: the server invalidates the SID and emits the _session ended_ event to the upper layer. After `Close`, the SID is no longer valid and any later request bearing it MUST be rejected (Section 3.2). `Close` is the graceful counterpart to timeout (Section 4); the two are equivalent in effect, differing only in promptness. Supporting `Close` is RECOMMENDED but a client that simply stops issuing requests still ends its session by timeout.
 
 ## 4. Liveness and Timeout
 
 Because no connection closes to signal that a client is gone, the server bounds each session by a **TTL**. `Establish` starts it; every in-session request (Section 3.2) refreshes it. A client with nothing else to send MAY keep its session alive by issuing any in-session request; a deployment MAY expose an explicit, body-less keepalive request for this purpose, but none is required beyond the requests the upper layer already makes.
 
-If the TTL elapses with no in-session request, the server MUST end the session: it invalidates the SID and emits the *session ended* event to the upper layer. The TTL duration is deployment-defined; the server SHOULD choose it to tolerate normal request jitter while still ending dead sessions promptly. Selecting a TTL is the pull analogue of tuning keepalive intervals on a connection.
+If the TTL elapses with no in-session request, the server MUST end the session: it invalidates the SID and emits the _session ended_ event to the upper layer. The TTL duration is deployment-defined; the server SHOULD choose it to tolerate normal request jitter while still ending dead sessions promptly. Selecting a TTL is the pull analogue of tuning keepalive intervals on a connection.
 
 ## 5. What This Layer Does Not Provide
 
 Two non-features are deliberate and load-bearing for the layering above:
 
-- **No server push.** This layer does not, and over a request/response transport cannot, let the server send a message to a client on its own initiative. Every server response is the answer to a client request. A session therefore confers *identity and liveness*, not a channel the server can speak down. Anything the upper layer needs to learn from the server it MUST obtain by issuing a request; the upper layer reckons with this directly (in the Pull Profile, by polling — `rpc-pull-profile.md` §5).
+- **No server push.** This layer does not, and over a request/response transport cannot, let the server send a message to a client on its own initiative. Every server response is the answer to a client request. A session therefore confers _identity and liveness_, not a channel the server can speak down. Anything the upper layer needs to learn from the server it MUST obtain by issuing a request; the upper layer reckons with this directly (in the Pull Profile, by polling — `rpc-pull-profile.md` §5).
 - **No upper-layer semantics.** This layer assigns no meaning to request bodies and models none of the upper layer's objects. Binding a session's lifecycle to a node's lifecycle, and interpreting the requests carried within it, are the Pull Profile's concern, not this layer's.
 
 ## 6. Security Considerations

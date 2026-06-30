@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a **binding**. It crystallizes the abstract operations of the *GRS RPC One-Way Pushable Derivative* (`../interface-profiles/rpc-push-oneway.md`) into the concrete message form fixed by the *GRS JSON-Array Message Shape* (`../data-shapes/json-array-message-shape.md`). It is the meeting point of the two: it takes *what each operation does* from the former and *what a message looks like* from the latter, and fixes the one thing neither supplies alone — the concrete wire message for each operation.
+This document is a **binding**. It crystallizes the abstract operations of the _GRS RPC One-Way Pushable Derivative_ (`../interface-profiles/rpc-push-oneway.md`) into the concrete message form fixed by the _GRS JSON-Array Message Shape_ (`../data-shapes/json-array-message-shape.md`). It is the meeting point of the two: it takes _what each operation does_ from the former and _what a message looks like_ from the latter, and fixes the one thing neither supplies alone — the concrete wire message for each operation.
 
 This is precisely the latitude the layering reserves for a binding. The Common Core grants it: an operation's name and the order in which its inputs are listed are abstract, and "a binding … fixes the concrete selector for each operation and the concrete layout of its inputs" (Core §5). The shape defers to it: "the operation each [selector] denotes [is] fixed by a binding outside this shape" (Shape §3.2). The derivative leaves the form open while fixing the behavior: every operation is one-way, with no response and no correlation (OneWay §2, §4). This binding occupies exactly that gap and adds nothing to the semantics.
 
@@ -12,14 +12,8 @@ It is normative for implementations claiming the GRS One-Way Pushable JSON-Array
 
 1. Terminology
 2. What This Binding Fixes
-3. The Carried Types
-   3.1. Designator
-   3.2. Payload
-   3.3. NeighborhoodState
-4. The Messages
-   4.1. `Send` (client → server)
-   4.2. `Deliver` (server → client)
-   4.3. `NeighborhoodUpdate` (server → client)
+3. The Carried Types 3.1. Designator 3.2. Payload 3.3. NeighborhoodState
+4. The Messages 4.1. `Send` (client → server) 4.2. `Deliver` (server → client) 4.3. `NeighborhoodUpdate` (server → client)
 5. Selectors and Directionality
 6. Well-Formedness and Receiver Handling
 7. No Correlation, No Response
@@ -60,7 +54,7 @@ A `NeighborhoodState` is represented as a **JSON array** whose elements are the 
 - **Order is not significant.** A `NeighborhoodState` is a set (Core §3); a receiver MUST NOT ascribe meaning to element order, nor infer anything from a change of order between two successive states. Two arrays with the same elements in any order denote the same state.
 - The **empty array** `[]` is the well-formed representation of the empty neighborhood, which is a valid state and not an error (Core §3, Relay §2).
 
-The ordering and versioning of *successive* states remains out of scope (Core §3); under this binding a client relies on the transport's in-order delivery, so its most recently received state is its current one (Push §6, OneWay §3.3).
+The ordering and versioning of _successive_ states remains out of scope (Core §3); under this binding a client relies on the transport's in-order delivery, so its most recently received state is its current one (Push §6, OneWay §3.3).
 
 ## 4. The Messages
 
@@ -101,10 +95,10 @@ This is the path to neighborhood-state availability (OneWay §3.3, Core §4.2). 
 
 The three selectors occupy the shape's **string selector space** (Shape §3.2) and are bare — this binding applies no namespace. They are the abstract operation names verbatim:
 
-| Operation | Selector | Direction |
-|---|---|---|
-| `Send` | `"Send"` | client → server |
-| `Deliver` | `"Deliver"` | server → client |
+| Operation            | Selector               | Direction       |
+| -------------------- | ---------------------- | --------------- |
+| `Send`               | `"Send"`               | client → server |
+| `Deliver`            | `"Deliver"`            | server → client |
 | `NeighborhoodUpdate` | `"NeighborhoodUpdate"` | server → client |
 
 This binding uses **no integer selector space**: an integer at element 0 is an unrecognized selector here and is discarded (Shape §5). Because only the string space is in use, the cross-space type-confusion hazard the shape warns of (Shape §8) does not arise within this binding.

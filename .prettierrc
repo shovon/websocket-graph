@@ -13,7 +13,7 @@
   "singleAttributePerLine": false,
   "htmlWhitespaceSensitivity": "css",
   "vueIndentScriptAndStyle": false,
-  "proseWrap": "preserve",
+  "proseWrap": "never",
   "insertPragma": false,
   "printWidth": 80,
   "requirePragma": false,

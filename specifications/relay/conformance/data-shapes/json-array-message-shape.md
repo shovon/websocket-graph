@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document fixes a concrete **message shape**: the layout of a single application message as a JSON array. It is deliberately self-contained. It defines no operations, names no procedures, and depends on no other GRS document; it fixes only the *form* a message takes on the wire — a JSON array whose first element selects an operation and whose remaining elements are that operation's positional arguments.
+This document fixes a concrete **message shape**: the layout of a single application message as a JSON array. It is deliberately self-contained. It defines no operations, names no procedures, and depends on no other GRS document; it fixes only the _form_ a message takes on the wire — a JSON array whose first element selects an operation and whose remaining elements are that operation's positional arguments.
 
 The shape rests on three premises (Section 2), stated here so the document can be read on its own:
 
@@ -16,11 +16,7 @@ It is one shape among possible others — an implementation MAY frame its messag
 
 1. Terminology
 2. Design Premises
-3. The Message Shape
-   3.1. A Message Is a JSON Array
-   3.2. The Selector
-   3.3. Positional Arguments
-   3.4. The Application Payload
+3. The Message Shape 3.1. A Message Is a JSON Array 3.2. The Selector 3.3. Positional Arguments 3.4. The Application Payload
 4. Fire-and-Forget: No Response, No Correlation
 5. Well-Formedness and Receiver Handling
 6. Evolution and Forward Compatibility
@@ -48,7 +44,7 @@ This shape is the middle of three layers, and is defined entirely by what it del
 
 **Premise 1 — a reliable, message-oriented, correlating transport beneath.** This shape assumes the layer below it delivers whole messages (it frames; this shape does not) reliably and, where the application requires related messages to be paired, correlates them. That layer is **not** required to sit at L4: it may be TCP itself, a message-oriented protocol layered over TCP, a WebSocket data channel, or any equivalent that preserves message boundaries and supplies correlation when asked. Because correlation lives there, **this shape carries no correlation identifier of its own** (Section 4).
 
-**Premise 2 — an opaque application payload above.** Where an operation carries application data, that data is a positional argument and is opaque here: this shape neither reads nor ascribes structure to it (Section 3.4). What a payload *means* is the application's, constructed above this shape.
+**Premise 2 — an opaque application payload above.** Where an operation carries application data, that data is a positional argument and is opaque here: this shape neither reads nor ascribes structure to it (Section 3.4). What a payload _means_ is the application's, constructed above this shape.
 
 **Premise 3 — fire-and-forget.** No message under this shape is a reply to another, and no message expects one. The shape defines no acknowledgement, status, or error message, and provides a sender no feedback channel. Whatever end-to-end guarantee an application needs — delivery confirmation, retry, ordering across operations, request/response pairing of its own — it builds above this shape, encoded within payloads and sent as ordinary messages (Section 7).
 
@@ -84,22 +80,22 @@ The top-level JSON value is **always an array**. A JSON object, a bare string, n
 
 The selector is element 0 of the array and names the operation the message invokes. It MUST be either:
 
-- a **non-empty JSON string** (the *string selector space*), or
-- a **JSON number that denotes a non-negative integer** (the *integer selector space*) — no fraction, no exponent yielding a non-integer, no negative value.
+- a **non-empty JSON string** (the _string selector space_), or
+- a **JSON number that denotes a non-negative integer** (the _integer selector space_) — no fraction, no exponent yielding a non-integer, no negative value.
 
 These are the two selector spaces this shape permits. A given message's selector lies in exactly one of them, determined by its JSON type. Which concrete values are valid selectors, and the operation each denotes, are fixed by a **binding** outside this shape (Section 1); this document fixes only the slot, the two admissible types, and the dispatch rule below.
 
 A receiver MUST dispatch on the selector's **value and JSON type together**. The string `"0"` and the integer `0` are **distinct selectors** and MUST NOT be conflated unless a binding explicitly assigns both to the same operation. A receiver that recognizes neither the value nor its space does not dispatch (Section 5).
 
-A binding SHOULD adopt a **single** selector space across its operation set, and a deployment SHOULD use that one space consistently. The shape permits both spaces so that *bindings may choose* between a human-readable string form and a compact integer form — not so that one deployment must accept both and reconcile them. An integer-space binding SHOULD keep selector values within the interoperably representable integer range (`0` through `2^53 − 1`), so that a value survives any conformant JSON implementation unchanged.
+A binding SHOULD adopt a **single** selector space across its operation set, and a deployment SHOULD use that one space consistently. The shape permits both spaces so that _bindings may choose_ between a human-readable string form and a compact integer form — not so that one deployment must accept both and reconcile them. An integer-space binding SHOULD keep selector values within the interoperably representable integer range (`0` through `2^53 − 1`), so that a value survives any conformant JSON implementation unchanged.
 
 ### 3.3. Positional Arguments
 
 Every element after the selector is a positional argument. Arguments are ordered and identified by position alone; this shape assigns them no names and ascribes them no meaning.
 
-The **number of arguments, their order, and the JSON type each must take** are fixed per operation by the binding that defines that operation — never by this shape. This shape places **no type constraint** on an argument: any JSON value (string, number, boolean, null, array, or object) is a structurally valid argument as far as the shape is concerned. Whether a given value is *acceptable* in a given position is the operation's rule, applied by the receiver above the shape (Section 5).
+The **number of arguments, their order, and the JSON type each must take** are fixed per operation by the binding that defines that operation — never by this shape. This shape places **no type constraint** on an argument: any JSON value (string, number, boolean, null, array, or object) is a structurally valid argument as far as the shape is concerned. Whether a given value is _acceptable_ in a given position is the operation's rule, applied by the receiver above the shape (Section 5).
 
-This is the sense in which the shape is operation-agnostic: it can carry any operation set whatever, because it fixes only that arguments are positional and follow the selector, and defers everything about *which* arguments an operation takes to that operation's binding.
+This is the sense in which the shape is operation-agnostic: it can carry any operation set whatever, because it fixes only that arguments are positional and follow the selector, and defers everything about _which_ arguments an operation takes to that operation's binding.
 
 ### 3.4. The Application Payload
 

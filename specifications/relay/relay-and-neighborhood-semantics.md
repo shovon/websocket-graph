@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a companion specification to the *Graph Relay System (GRS) Protocol* (`architecture.md`). Where the architecture overview fixes the *shape* of the system — a server maintaining a strongly connected directed graph, relaying only along out-edges — this document fixes the finer semantics that overview deliberately leaves out: how a node names its out-neighbors, how neighborhood state is made current, and what the server's relay does and does not guarantee.
+This document is a companion specification to the _Graph Relay System (GRS) Protocol_ (`architecture.md`). Where the architecture overview fixes the _shape_ of the system — a server maintaining a strongly connected directed graph, relaying only along out-edges — this document fixes the finer semantics that overview deliberately leaves out: how a node names its out-neighbors, how neighborhood state is made current, and what the server's relay does and does not guarantee.
 
 It is normative for implementations that claim to implement these aspects of GRS, but it is still one binding among possible others; a concrete transport binding is expected to fix the choices this document leaves open. Section references of the form (Architecture §N) point into `architecture.md`.
 
@@ -45,7 +45,7 @@ The relay's central safety guarantee is that a message never reaches the wrong n
 
 Equivalently: a send is only ever relayed to the out-neighbor its designator denotes at the moment of sending, or it is discarded — never delivered elsewhere. This holds together with the directionality rule of Architecture §3.1: because the only addressable targets are out-neighbors, and a designator resolves (Section 4) to at most one of them or to nothing, there is no path by which a message reaches a node that is not, at that instant, an out-neighbor of the sender.
 
-The practical guarantee is therefore strong but narrow: a `Send` carries no risk of *misdelivery*, only a risk of *non-delivery*. A designator that no longer denotes a current out-neighbor costs at most a dropped message (Section 4); it can never cause one to land on the wrong recipient.
+The practical guarantee is therefore strong but narrow: a `Send` carries no risk of _misdelivery_, only a risk of _non-delivery_. A designator that no longer denotes a current out-neighbor costs at most a dropped message (Section 4); it can never cause one to land on the wrong recipient.
 
 ## 4. Resolution Against the Current Neighborhood
 
@@ -84,7 +84,7 @@ Best-effort is a **floor, not a ceiling**. A derivative that binds GRS to a reli
 
 ## 7. What the Transport Fixes
 
-Delivery *quality* beyond the best-effort floor is deliberately left open and follows from the transport in use. The following are all implementation-defined, and a specification binding GRS to a concrete transport is expected to fix them:
+Delivery _quality_ beyond the best-effort floor is deliberately left open and follows from the transport in use. The following are all implementation-defined, and a specification binding GRS to a concrete transport is expected to fix them:
 
 - Reachability of the receiver at the instant of relay.
 - Buffering of pending messages, and retention and drop policy.

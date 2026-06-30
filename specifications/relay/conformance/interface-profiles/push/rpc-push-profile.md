@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a profile of the *GRS RPC Common Core* (`rpc-interface.md`) for **full-duplex, session-oriented transports** — environments in which the server can send a message to a client at any time, not only in response to a request, and in which a persistent connection underlies the session. WebSocket and raw TCP are the archetypes.
+This document is a profile of the _GRS RPC Common Core_ (`rpc-interface.md`) for **full-duplex, session-oriented transports** — environments in which the server can send a message to a client at any time, not only in response to a request, and in which a persistent connection underlies the session. WebSocket and raw TCP are the archetypes.
 
 It specializes the two responsibilities the core defers (Core §4.3, §4.4) in the direct way such a transport allows: the receiving half of the relay is a genuine server push, and a node's lifetime is the connection's lifetime. This makes it the lighter of the two profiles — the architecture's "node existence is coterminous with the session" (Architecture §3) holds literally here, so no establishment or teardown procedure is needed. It is normative for implementations claiming the GRS Pushable Profile, and depends on, without restating, the abstract data and the `Send` semantics of the core; it is here that the core's neighborhood-state-availability responsibility (Core §4.2) is fixed, primarily by push. Section references (Core §N) point into `rpc-interface.md`; (Architecture §N) and (Relay §N) into the respective companions.
 
@@ -12,17 +12,14 @@ It specializes the two responsibilities the core defers (Core §4.3, §4.4) in t
 2. Why This Profile Differs
 3. The Connection Is the Session
 4. Liveness and Departure
-5. Operations
-   5.1. `Send` (client → server)
-   5.2. `Deliver` (server → client)
-   5.3. `NeighborhoodUpdate` (server → client)
+5. Operations 5.1. `Send` (client → server) 5.2. `Deliver` (server → client) 5.3. `NeighborhoodUpdate` (server → client)
 6. Ordering
 7. Security Considerations
 8. References
 
 ## 1. Terminology
 
-The key words "MUST", "MUST NOT", etc. are to be interpreted as described in RFC 2119. This profile uses all terms of the core (Core §1). A **server-initiated** message (a *push*) is one the server sends to a client on its own initiative over the open connection, without a prior request to answer; `Deliver` (Section 5.2) and `NeighborhoodUpdate` (Section 5.3) are the two such messages this profile defines.
+The key words "MUST", "MUST NOT", etc. are to be interpreted as described in RFC 2119. This profile uses all terms of the core (Core §1). A **server-initiated** message (a _push_) is one the server sends to a client on its own initiative over the open connection, without a prior request to answer; `Deliver` (Section 5.2) and `NeighborhoodUpdate` (Section 5.3) are the two such messages this profile defines.
 
 ## 2. Why This Profile Differs
 
@@ -37,7 +34,7 @@ Everything else — self-scoping, `Send` semantics, the security invariants — 
 
 Opening a connection to the server establishes the caller's node; the server places it in the graph (Architecture §3). There is **no `Join` operation and no session handle**: the connection itself is the node's identity, and the server scopes every operation to the node on whose connection it arrives (Core §6, self-scoping). Closing the connection destroys the node (Section 4).
 
-By default the server attaches no identity across connections: a client that reconnects establishes a *wholly new* node, inheriting nothing from any it previously held (Architecture §3, §3.2). Any identity continuity is then constructed above this interface — unless a derivative provides a persistent node identity at the substrate (Architecture §3), re-bound when the client reconnects and proves it.
+By default the server attaches no identity across connections: a client that reconnects establishes a _wholly new_ node, inheriting nothing from any it previously held (Architecture §3, §3.2). Any identity continuity is then constructed above this interface — unless a derivative provides a persistent node identity at the substrate (Architecture §3), re-bound when the client reconnects and proves it.
 
 On establishment the server SHOULD push the node's initial `NeighborhoodState` via `NeighborhoodUpdate` (Section 5.3) so the client begins with a current view from the start.
 

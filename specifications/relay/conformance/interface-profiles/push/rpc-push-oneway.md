@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a **derivative** of the *GRS RPC Pushable Profile* (`rpc-push-profile.md`) in the sense of Architecture §7.1: it fixes one choice that profile deliberately leaves open and changes nothing else. The Pushable Profile defines `Send` with "at most an acceptance decision" and permits it to be one-way (Push §5.1, Core §4.1); this derivative **fixes that choice to strictly one-way**, so that *every* operation in the interface — the one client-initiated operation and both server-initiated pushes — is one-way. The interface carries no responses, and therefore defines no response correlation.
+This document is a **derivative** of the _GRS RPC Pushable Profile_ (`rpc-push-profile.md`) in the sense of Architecture §7.1: it fixes one choice that profile deliberately leaves open and changes nothing else. The Pushable Profile defines `Send` with "at most an acceptance decision" and permits it to be one-way (Push §5.1, Core §4.1); this derivative **fixes that choice to strictly one-way**, so that _every_ operation in the interface — the one client-initiated operation and both server-initiated pushes — is one-way. The interface carries no responses, and therefore defines no response correlation.
 
 This document constrains only the **call shape** of the interface — the axis Core §5 leaves to a binding ("request/response versus one-way, and correlation of responses"). It says nothing about the transport beneath, and nothing about delivery quality: ordering, reliability, buffering, retention, and deduplication remain exactly as the Pushable Profile and any transport binding under it leave them (Relay §7). The property fixed here is a property of the interface, not of any transport that carries it.
 
@@ -12,10 +12,7 @@ It is normative for implementations claiming the GRS One-Way Pushable Derivative
 
 1. Terminology
 2. What This Derivative Fixes
-3. The One-Way Interface
-   3.1. `Send` (client → server)
-   3.2. `Deliver` (server → client)
-   3.3. `NeighborhoodUpdate` (server → client)
+3. The One-Way Interface 3.1. `Send` (client → server) 3.2. `Deliver` (server → client) 3.3. `NeighborhoodUpdate` (server → client)
 4. No Responses, No Correlation
 5. Silent Discard
 6. No Response-Eliciting Operations

@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a companion to the *GRS WebSocket Transport Binding* (`websocket-transport-binding.md`). That binding fixes everything about a connection except one thing it deliberately leaves open: a connection joins exactly **one graph**, but *which* graph, and how a server is addressed, it defers here (Transport §2, §5.1). This document fixes that one thing — and fixes it almost entirely by saying where the freedom lives, not by removing it.
+This document is a companion to the _GRS WebSocket Transport Binding_ (`websocket-transport-binding.md`). That binding fixes everything about a connection except one thing it deliberately leaves open: a connection joins exactly **one graph**, but _which_ graph, and how a server is addressed, it defers here (Transport §2, §5.1). This document fixes that one thing — and fixes it almost entirely by saying where the freedom lives, not by removing it.
 
 Its whole content reduces to one rule and its consequences: **the connection URL identifies the graph.** The URL is at once where a client connects (a locator) and an opaque identifier for the graph it joins (a natural key) — the same duality a linked-data system gives an actor IRI, which both dereferences and names. From that one rule follow a server's freedoms (it owns the URL's shape and need not encode any meaning in it), a client's single hard constraint (it MUST treat the URL as opaque), and one security decision a deployment MUST make explicitly (what a previously-unknown URL does).
 
@@ -13,9 +13,7 @@ A server that hosts exactly one graph needs little of this document: it exposes 
 1. Terminology
 2. What This Document Fixes
 3. The URL Is King
-4. Opacity: A Two-Sided Contract
-   4.1. The Server's Freedom
-   4.2. The Client's Constraint
+4. Opacity: A Two-Sided Contract 4.1. The Server's Freedom 4.2. The Client's Constraint
 5. One Graph or Many
 6. Aliasing and Identity
 7. Making the Resource Known
@@ -28,7 +26,7 @@ A server that hosts exactly one graph needs little of this document: it exposes 
 
 This document uses all terms of the transport binding (Transport §1), the JSON-array binding (Binding §1), and the architecture (Architecture §3). A **graph** is the relay graph a node joins (Architecture §3). A **connection** is a WebSocket connection on which the transport binding has been negotiated (Transport §3).
 
-A **client**, throughout this document, is the **GRS protocol participant** — the component that holds a resource URL, opens the connection, and exchanges operations over the graph (Transport §5.2). It is *not* the enclosing application that may drive it. Logic above the client — in particular, any construction of a resource URL from out-of-band knowledge of a server's URL scheme — is outside this document's scope; this document constrains only what the client itself is handed and does (Section 4.2).
+A **client**, throughout this document, is the **GRS protocol participant** — the component that holds a resource URL, opens the connection, and exchanges operations over the graph (Transport §5.2). It is _not_ the enclosing application that may drive it. Logic above the client — in particular, any construction of a resource URL from out-of-band knowledge of a server's URL scheme — is outside this document's scope; this document constrains only what the client itself is handed and does (Section 4.2).
 
 A **resource URL** is the URI of a connection's opening WebSocket handshake — its request target (RFC 6455 §3; a URI per RFC 3986), for example `wss://example.com/some-room` or `wss://example.com`. It is the value this document makes identify a graph. "Resource URL" and "graph's URL" are used interchangeably.
 
@@ -36,7 +34,7 @@ To **resolve** a resource URL, here, is the server's act of associating an arriv
 
 ## 2. What This Document Fixes
 
-The transport binding establishes that opening a connection is joining, and that a connection joins exactly one graph, but states that "*which* graph the node joins is the graph the server associates with this connection" and defers the association entirely (Transport §5.1). This document supplies the missing association and nothing else:
+The transport binding establishes that opening a connection is joining, and that a connection joins exactly one graph, but states that "_which_ graph the node joins is the graph the server associates with this connection" and defers the association entirely (Transport §5.1). This document supplies the missing association and nothing else:
 
 - It fixes that the association key is the connection's **request URI** — the resource URL (Section 3).
 - It fixes the **client's** obligation toward that URL — opacity (Section 4.2).
@@ -61,7 +59,7 @@ Neither role is privileged; the URL is king because it is both at once.
 
 ## 4. Opacity: A Two-Sided Contract
 
-The URL's structure is a contract with exactly two clauses, one freeing the server and one binding the client. Stating both is the substance of this document; the server's freedom is *safe* precisely because the client's constraint guarantees nothing depends on the structure the server is free to choose.
+The URL's structure is a contract with exactly two clauses, one freeing the server and one binding the client. Stating both is the substance of this document; the server's freedom is _safe_ precisely because the client's constraint guarantees nothing depends on the structure the server is free to choose.
 
 ### 4.1. The Server's Freedom
 
@@ -81,7 +79,7 @@ A client comes to hold a resource URL only out-of-band (Section 7) and uses it o
 
 This is the one place this document constrains a client, and it is the contract's load-bearing clause: it is what lets a server change, restructure, or randomize its URLs without breaking any client, because no conformant client was ever entitled to depend on their form.
 
-Because "client" here is the protocol participant and not the application that may enclose it (Section 1), this constraint reaches only the component that connects. An enclosing program MAY construct a resource URL from out-of-band knowledge — including a server's **publicly published URL scheme** (for example, a URI Template) — and hand the finished URL down to the client, which still receives it whole and treats it opaquely; every clause above is satisfied. The structural coupling such a program takes on — its dependence on the server's scheme, and its exposure should the server restructure — lives **above** the client, not in it. What this clause forbids is a *client* decomposing or reading a URL it was handed; it does not reach up to forbid an application from building one.
+Because "client" here is the protocol participant and not the application that may enclose it (Section 1), this constraint reaches only the component that connects. An enclosing program MAY construct a resource URL from out-of-band knowledge — including a server's **publicly published URL scheme** (for example, a URI Template) — and hand the finished URL down to the client, which still receives it whole and treats it opaquely; every clause above is satisfied. The structural coupling such a program takes on — its dependence on the server's scheme, and its exposure should the server restructure — lives **above** the client, not in it. What this clause forbids is a _client_ decomposing or reading a URL it was handed; it does not reach up to forbid an application from building one.
 
 ## 5. One Graph or Many
 
@@ -100,13 +98,13 @@ Indeed a client MUST NOT try to tell. Whether two resource URLs alias one graph 
 
 ## 7. Making the Resource Known
 
-Because a resource URL is opaque (Section 4.2), a client cannot derive or guess one; it must be **told**. This document mandates only *that* a client is told, out-of-band, and specifies no mechanism.
+Because a resource URL is opaque (Section 4.2), a client cannot derive or guess one; it must be **told**. This document mandates only _that_ a client is told, out-of-band, and specifies no mechanism.
 
 A server that intends clients to reach a graph MUST provide some out-of-band means by which an intended client comes to hold its resource URL — a published link, a configuration value, a directory or invitation, a URL carried inside an earlier application message, anything. The channel, its form, and its access control are the deployment's to choose. This document defines **no in-band discovery**: consistent with the binding's three operations (Binding §4), there is no operation by which a client enumerates a server's graphs or asks for a URL. The client is, in the plain sense, supposed to already know.
 
 ## 8. An Optional HTTP Descriptor (Non-Normative)
 
-The `wss` scheme opens a socket; it does not return a document. One therefore cannot dereference a resource URL the way one dereferences a linked-data identifier — there is no `GET wss://example.com/some-room` that yields a description of the graph. The identifier and locator roles of Section 3 both hold, but the *fetch-a-description* affordance that an `https` actor IRI enjoys is simply absent from a `wss` URL.
+The `wss` scheme opens a socket; it does not return a document. One therefore cannot dereference a resource URL the way one dereferences a linked-data identifier — there is no `GET wss://example.com/some-room` that yields a description of the graph. The identifier and locator roles of Section 3 both hold, but the _fetch-a-description_ affordance that an `https` actor IRI enjoys is simply absent from a `wss` URL.
 
 A deployment that wants that affordance MAY supply it separately: pair a resource URL with an HTTP(S) sibling at the same authority and path, or a well-known location (RFC 8615), that returns a descriptor document for the graph. This is wholly optional, entirely outside this document's normative scope, and changes nothing about the `wss` URL, over which the opacity of §4.2 continues to govern. It is offered only to note that the dereference half of the duality, where wanted, is an HTTP sibling's job, not this protocol's.
 

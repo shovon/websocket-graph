@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a companion to the *GRS RPC Pushable Profile* (`../interface-profiles/rpc-push-profile.md`). Where that profile defines the operations a full-duplex, session-oriented transport carries — `Send`, `Deliver`, `NeighborhoodUpdate` — each in isolation, this document **choreographs** them: it shows how they compose, over time, into the end-to-end flows a participant actually observes (joining, sending, receiving, neighborhood change, departure).
+This document is a companion to the _GRS RPC Pushable Profile_ (`../interface-profiles/rpc-push-profile.md`). Where that profile defines the operations a full-duplex, session-oriented transport carries — `Send`, `Deliver`, `NeighborhoodUpdate` — each in isolation, this document **choreographs** them: it shows how they compose, over time, into the end-to-end flows a participant actually observes (joining, sending, receiving, neighborhood change, departure).
 
 It adds exactly one thing the operation definitions do not: **temporal sequencing** — what happens, in what order, and which parties observe it. It deliberately restates none of the relay semantics, designator rules, or best-effort guarantees fixed elsewhere; it only sequences behavior those documents already mandate, and points back to them.
 
@@ -57,7 +57,7 @@ sequenceDiagram
     Note right of S: initial state
 ```
 
-Establishing a node also changes some *other* node's neighborhood (its out-edge is retargeted toward or around the newcomer); the pushes those nodes receive are the fan-out of Section 7, not part of this newcomer's flow.
+Establishing a node also changes some _other_ node's neighborhood (its out-edge is retargeted toward or around the newcomer); the pushes those nodes receive are the fan-out of Section 7, not part of this newcomer's flow.
 
 ## 4. Sending to an Out-Neighbor
 
@@ -81,7 +81,7 @@ The `Deliver` arm is dashed: acceptance at the sender and arrival at the receive
 
 The receiving half of the relay is a genuine server push: the server delivers each relayed payload to the destination node as it arrives, via `Deliver` (Push §5.2). The receiver took no action to obtain it — there is no inbox and no poll in this profile.
 
-Crucially, a delivered `Payload` carries **no sender designator and no reply path** (Push §5.2, Architecture §3.1). Receiving a message confers no ability to answer it: for the receiver to reach the sender, the sender must independently be one of the receiver's *own* out-neighbors (Architecture §3.1). Any sender identity or reply affordance an application needs is constructed *within* the `Payload`, above this interface (Architecture §3.2).
+Crucially, a delivered `Payload` carries **no sender designator and no reply path** (Push §5.2, Architecture §3.1). Receiving a message confers no ability to answer it: for the receiver to reach the sender, the sender must independently be one of the receiver's _own_ out-neighbors (Architecture §3.1). Any sender identity or reply affordance an application needs is constructed _within_ the `Payload`, above this interface (Architecture §3.2).
 
 ```mermaid
 sequenceDiagram
@@ -111,7 +111,7 @@ sequenceDiagram
 
 When a node's neighborhood changes — an out-edge added, removed, or retargeted — the server MUST push the updated `NeighborhoodState` to that affected node, and SHOULD do so promptly after the change is committed (Push §5.3, Relay §5).
 
-The point this choreography makes explicit is that **a single structural change fans out to more than one node**. A node joining or leaving is not observed only by itself: repairing the graph to preserve strong connectivity (Architecture §3) retargets the out-edges of *other* nodes, and every node whose out-edge moved receives its own `NeighborhoodUpdate`.
+The point this choreography makes explicit is that **a single structural change fans out to more than one node**. A node joining or leaving is not observed only by itself: repairing the graph to preserve strong connectivity (Architecture §3) retargets the out-edges of _other_ nodes, and every node whose out-edge moved receives its own `NeighborhoodUpdate`.
 
 Consider a directed cycle `… → A → B → …` and a newcomer D inserted between A and B, yielding `… → A → D → B → …`. Two nodes observe the join: D learns its initial neighborhood, and **A learns that its out-neighbor changed from B to D**. B and the rest are untouched.
 
@@ -127,7 +127,7 @@ sequenceDiagram
     Note right of S: A's out-edge now denotes D
 ```
 
-The symmetric statement holds for departure (Section 8): removing D from `A → D → B` retargets A's out-edge back to B, and A — the departed node's in-neighbor — receives a `NeighborhoodUpdate`. In both directions, the participants who learn of a change are the *affected* nodes, which generally include neighbors of the node that joined or left, not that node alone.
+The symmetric statement holds for departure (Section 8): removing D from `A → D → B` retargets A's out-edge back to B, and A — the departed node's in-neighbor — receives a `NeighborhoodUpdate`. In both directions, the participants who learn of a change are the _affected_ nodes, which generally include neighbors of the node that joined or left, not that node alone.
 
 ## 8. Departure
 

@@ -6,19 +6,19 @@ A **Degree-3 Balanced Tree (D3BT)** keeps a set of nodes connected as a single u
 
 ## The whole structure in three ideas
 
-A D3BT has no ordering invariant: a node's three slots have no meaning beyond "a neighbor lives here" — there is no left, no right, no key to keep between them, and an edge may run between *any* two nodes. That freedom lets the whole structure collapse to **three ideas**:
+A D3BT has no ordering invariant: a node's three slots have no meaning beyond "a neighbor lives here" — there is no left, no right, no key to keep between them, and an edge may run between _any_ two nodes. That freedom lets the whole structure collapse to **three ideas**:
 
-1. **A node is three symmetric slots.** The degree bound *is* the representation — not a rule you check, but the fact that a node has nowhere to put a fourth neighbor. No slot is privileged: there is no parent, no child, no order.
+1. **A node is three symmetric slots.** The degree bound _is_ the representation — not a rule you check, but the fact that a node has nowhere to put a fourth neighbor. No slot is privileged: there is no parent, no child, no order.
 
 2. **One primitive: the symmetric link.** Every change to the edge set is "occupy one empty slot on each of two nodes," or its inverse, "clear the slot on each that points at the other." There is no restructuring — a tree of degree-3 nodes is only ever linked and unlinked.
 
-3. **Balance by placement.** Since we never restructure, balance has to come from *deciding where things go*. Insertion walks toward the shallowest part of the tree before attaching. Deletion re-hangs each orphaned piece at the **centroid** of the largest survivor. Both decisions are nothing more than local measurements — height, size, centroid — and those measurements are the entire algorithm.
+3. **Balance by placement.** Since we never restructure, balance has to come from _deciding where things go_. Insertion walks toward the shallowest part of the tree before attaching. Deletion re-hangs each orphaned piece at the **centroid** of the largest survivor. Both decisions are nothing more than local measurements — height, size, centroid — and those measurements are the entire algorithm.
 
 The rest of this note is those three ideas worked out: the model (§1), the link primitive (§2), the two measurements balance is built on (§3), and then the three mutations — insert (§4), join (§5), delete (§6) — each a few lines on top of what came before. Section 7 lists the four invariants every mutation preserves; Section 8 explains why the tree stays shallow; Section 9 notes the sharp edges.
 
 ## 1. The model: three symmetric slots
 
-A D3BT is a map from each node key to a fixed triple of **slots**. Each slot is either *empty* or holds *one* neighbor key.
+A D3BT is a map from each node key to a fixed triple of **slots**. Each slot is either _empty_ or holds _one_ neighbor key.
 
 ```
 Tree : Key  ->  (Slot, Slot, Slot)
@@ -31,7 +31,7 @@ Two points decide every later detail:
 
 - **The triple is positional but the positions are meaningless.** Slot 0 is not "the parent" and slot 2 is not "the last child." A slot index distinguishes one slot from another and nothing more. Never read priority, direction, or order into it.
 
-- **Empty must be a real sentinel, distinct from every key.** If keys can be `0`, `""`, or `null`, a bare falsy value cannot double as "empty." Wrap each occupied slot — store a one-element box `[k]` and let `EMPTY` be the absence of a box — so that *any* box means "occupied," whatever it holds. (This is exactly why the reference code types a slot as `[K] | null` rather than `K | null`.)
+- **Empty must be a real sentinel, distinct from every key.** If keys can be `0`, `""`, or `null`, a bare falsy value cannot double as "empty." Wrap each occupied slot — store a one-element box `[k]` and let `EMPTY` be the absence of a box — so that _any_ box means "occupied," whatever it holds. (This is exactly why the reference code types a slot as `[K] | null` rather than `K | null`.)
 
 That is the whole data model. Everything below is operations on this map.
 
@@ -51,7 +51,7 @@ unlink(a, b):                     # a and b are currently neighbors
     clear the slot of b that holds a
 ```
 
-There is just one operation here (and its inverse), and it never moves a subtree. Add an edge, or remove one; the shapes on either side are untouched. Every mutation in §4–§6 is a handful of `link`/`unlink` calls wrapped in a decision about *where* to call them.
+There is just one operation here (and its inverse), and it never moves a subtree. Add an edge, or remove one; the shapes on either side are untouched. Every mutation in §4–§6 is a handful of `link`/`unlink` calls wrapped in a decision about _where_ to call them.
 
 Two helpers round out the toolkit. **Adjacency** is just the occupied slots:
 
@@ -71,7 +71,7 @@ findSparse(start):
 
 ## 3. The two measurements balance is built on
 
-Balance is decided by two recursive walks. Both take the node you're standing on **and the neighbor you came from**, so they measure only the subtree that fans out *away* from the caller — the parent direction is simply skipped.
+Balance is decided by two recursive walks. Both take the node you're standing on **and the neighbor you came from**, so they measure only the subtree that fans out _away_ from the caller — the parent direction is simply skipped.
 
 ```
 size(n, from):                    # number of nodes in n's subtree
@@ -118,14 +118,9 @@ insert(entry, x):
 
 The selection rule is the whole balancing intent in one line: **prefer the shallowest onward subtree; break ties toward the smallest.** Height is the primary key because it is height — not node count — that we are trying to keep down. Because both measurements exclude `from`, each step looks only at the subtree it is about to enter, and (with memoization across the descent) the walk costs no more than the part of the tree it examines.
 
-Note what is *absent*: no rebalancing, no second pass, no fix-up on the way back. A non-empty insertion changes exactly two neighborhoods — the newcomer and the node it attached to — and that pair is the entire affected set.
+Note what is _absent_: no rebalancing, no second pass, no fix-up on the way back. A non-empty insertion changes exactly two neighborhoods — the newcomer and the node it attached to — and that pair is the entire affected set.
 
-> **Other placement rules (non-normative).** Any rule that attaches to a sparse
-> node keeps the invariants; they differ only in balance quality.
-> *Fill-first* — BFS to the first sparse node and attach (no measurement at all).
-> *Smallest-subtree* — descend by `size` alone, ignoring height. The
-> height-then-size rule above is the recommended default for its stronger control
-> over height.
+> **Other placement rules (non-normative).** Any rule that attaches to a sparse node keeps the invariants; they differ only in balance quality. _Fill-first_ — BFS to the first sparse node and attach (no measurement at all). _Smallest-subtree_ — descend by `size` alone, ignoring height. The height-then-size rule above is the recommended default for its stronger control over height.
 
 ## 5. Joining two trees: one edge between sparse nodes
 
@@ -141,7 +136,7 @@ join(a, b):                       # PRECONDITION: a and b are in DIFFERENT trees
 
 Find a sparse node in each tree and link them. Because the two endpoints started in different components, the new edge cannot close a cycle, so the result is again a single tree of degree at most three.
 
-The precondition is the one genuinely dangerous spot in the whole structure, and `join` does **not** check it: linking two nodes of the *same* tree silently creates a cycle, and every later `size` / `height` / `centroid` walk then loops or lies. The only caller that satisfies the precondition by construction is deletion's repair, where the pieces are provably separate at the moment they're joined.
+The precondition is the one genuinely dangerous spot in the whole structure, and `join` does **not** check it: linking two nodes of the _same_ tree silently creates a cycle, and every later `size` / `height` / `centroid` walk then loops or lies. The only caller that satisfies the precondition by construction is deletion's repair, where the pieces are provably separate at the moment they're joined.
 
 ## 6. Deletion: detach, then re-root the orphans at the centroid
 
@@ -171,7 +166,7 @@ delete(x):
     return affected
 ```
 
-The deleted node is never in the affected set — it's gone. The set reports *survivors* whose neighborhoods changed: the former neighbors that lost an edge, plus the nodes touched by the repair joins.
+The deleted node is never in the affected set — it's gone. The set reports _survivors_ whose neighborhoods changed: the former neighbors that lost an edge, plus the nodes touched by the repair joins.
 
 The one new ingredient is the **centroid** — the node whose removal would leave no piece bigger than half the tree. Re-hanging the smaller orphans there, rather than at some arbitrary node, is what keeps the repaired tree's height low; it is deletion's version of insertion's "descend to the shallowest part."
 
@@ -191,14 +186,14 @@ Each step strictly enters a smaller-than-`T` region, so the walk terminates at a
 
 ## 7. The four invariants
 
-Every operation in §4–§6 leaves all four of these true on return (it may break them *transiently* mid-operation, but never on exit). They are **not self-enforcing** — the underlying map is an ordinary container, and any code that writes slots outside these operations can violate them.
+Every operation in §4–§6 leaves all four of these true on return (it may break them _transiently_ mid-operation, but never on exit). They are **not self-enforcing** — the underlying map is an ordinary container, and any code that writes slots outside these operations can violate them.
 
 - **I1 — Degree bound.** Three slots per node, so degree never exceeds three. This one is structural: there is literally no fourth slot to overfill.
 - **I2 — Edge symmetry.** If a slot of `a` holds `b`, some slot of `b` holds `a`. No half-edges. `link`/`unlink` are the only writers, and they always touch both ends — so this holds by construction.
 - **I3 — No self-loops or multi-edges.** No slot points a node at itself, and no two slots of a node hold the same neighbor.
 - **I4 — Acyclic per component.** Each connected piece is a free tree: `n` nodes, exactly `n - 1` edges. `join`'s different-component precondition is what protects this.
 
-A structure satisfying I1–I4 is a forest of degree-bounded trees. In steady state a D3BT also maintains **I5 — one component**: everything is a single tree. I5 is necessarily disturbed the instant a node departs and is restored by deletion's repair, so connectivity is a property that holds *between* operations, not during them.
+A structure satisfying I1–I4 is a forest of degree-bounded trees. In steady state a D3BT also maintains **I5 — one component**: everything is a single tree. I5 is necessarily disturbed the instant a node departs and is restored by deletion's repair, so connectivity is a property that holds _between_ operations, not during them.
 
 A cheap, optional checker pays for itself in testing: degree ≤ 3 everywhere; every edge symmetric; exactly one component; exactly `n - 1` edges in it.
 
@@ -206,7 +201,7 @@ A cheap, optional checker pays for itself in testing: degree ≤ 3 everywhere; e
 
 A component of `n` nodes has `n - 1` edges (I4) and max degree three (I1), so it is sparse by construction; the open question is only its height.
 
-Both mutations push toward small height by the same instinct — *act where the tree is shortest.* Insertion attaches in the shallowest subtree it can reach. Deletion re-roots survivors at the centroid, the point that minimizes the tallest resulting piece. The placement disciplines aim to keep height close to logarithmic in `n`, and in practice they do — but D3BT offers **no hard worst-case height bound**: height depends on the operation sequence. An application that needs a guarantee should strengthen the placement rule and document the bound it then enforces.
+Both mutations push toward small height by the same instinct — _act where the tree is shortest._ Insertion attaches in the shallowest subtree it can reach. Deletion re-roots survivors at the centroid, the point that minimizes the tallest resulting piece. The placement disciplines aim to keep height close to logarithmic in `n`, and in practice they do — but D3BT offers **no hard worst-case height bound**: height depends on the operation sequence. An application that needs a guarantee should strengthen the placement rule and document the bound it then enforces.
 
 Costs follow directly:
 
@@ -222,4 +217,7 @@ Costs follow directly:
 - **Mutation amplification.** Each deletion triggers a centroid computation and up to two joins — repeated linear work when deletions rain on a large tree. An adversarial workload should bound the mutation rate.
 - **Entry-point arbitrariness.** Operations given no entry point pick an arbitrary existing node. That's well-defined under I5; on a forest such a call acts within one component only.
 - **Key semantics.** Keys are compared only for equality and carry no ordering. A caller that recycles a key owns whatever meaning it reads into the reuse; the structure ascribes none.
+
+```
+
 ```

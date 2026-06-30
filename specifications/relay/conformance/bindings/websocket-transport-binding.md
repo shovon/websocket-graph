@@ -2,7 +2,7 @@
 
 ## Status of This Memo
 
-This document is a **transport binding**. It carries the *GRS One-Way Pushable JSON-Array Binding* (`oneway-json-array-binding.md`) over **WebSocket** (RFC 6455), and fixes the one layer the stack above it has, until now, only named: the transport beneath the message shape (Shape §2, premise 1). Everything above — what each operation does, and what each message looks like — is already fixed by the binding and its parents; this document fixes only how those messages cross a WebSocket connection, and under what name a peer agrees to speak them.
+This document is a **transport binding**. It carries the _GRS One-Way Pushable JSON-Array Binding_ (`oneway-json-array-binding.md`) over **WebSocket** (RFC 6455), and fixes the one layer the stack above it has, until now, only named: the transport beneath the message shape (Shape §2, premise 1). Everything above — what each operation does, and what each message looks like — is already fixed by the binding and its parents; this document fixes only how those messages cross a WebSocket connection, and under what name a peer agrees to speak them.
 
 It fixes three things and no more:
 
@@ -10,7 +10,7 @@ It fixes three things and no more:
 2. the **framing** the shape delegates — one message per WebSocket text message (Section 4);
 3. the **connection lifecycle** — that opening a connection is joining, that the connection fixes a node's role and identity, and that closing it is departure (Section 5) — realizing, at the wire, what the Pushable Profile and its choreography already mandate.
 
-It deliberately does **not** fix *which graph* a connection joins, *how a server is addressed*, or *what a connection URL looks like*. A connection under this binding joins exactly **one graph**; how many graphs a server hosts and how each is named is the concern of a companion, the *GRS WebSocket Resource* document (`websocket-resource.md`), and is out of scope here (Section 2). This binding is complete and correct for a server that hosts a single graph, which needs that companion not at all.
+It deliberately does **not** fix _which graph_ a connection joins, _how a server is addressed_, or _what a connection URL looks like_. A connection under this binding joins exactly **one graph**; how many graphs a server hosts and how each is named is the concern of a companion, the _GRS WebSocket Resource_ document (`websocket-resource.md`), and is out of scope here (Section 2). This binding is complete and correct for a server that hosts a single graph, which needs that companion not at all.
 
 It is normative for implementations claiming the GRS WebSocket Transport Binding. Section references of the form (Binding §N) point into `oneway-json-array-binding.md`; (Shape §N) into `../data-shapes/json-array-message-shape.md`; (Push §N) into `../interface-profiles/rpc-push-profile.md`; (Choreography §N) into `push-based-choreography.md`; (Core §N) into `../interface-profiles/rpc-interface.md`; (Relay §N) into `../../relay-and-neighborhood-semantics.md`; (Architecture §N) into `../../architecture.md`. The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" are to be interpreted as described in RFC 2119.
 
@@ -18,17 +18,9 @@ It is normative for implementations claiming the GRS WebSocket Transport Binding
 
 1. Terminology
 2. What This Binding Fixes, and What It Defers
-3. Subprotocol Negotiation
-   3.1. The Subprotocol Name
-   3.2. Offer and Selection
-   3.3. Versioning by a New Name
-4. Message Framing
-   4.1. One Message per WebSocket Text Message
-   4.2. Binary Messages and Control Frames
-5. The Connection
-   5.1. Opening a Connection Is Joining
-   5.2. The Connection Fixes a Node's Role
-   5.3. Liveness and Departure
+3. Subprotocol Negotiation 3.1. The Subprotocol Name 3.2. Offer and Selection 3.3. Versioning by a New Name
+4. Message Framing 4.1. One Message per WebSocket Text Message 4.2. Binary Messages and Control Frames
+5. The Connection 5.1. Opening a Connection Is Joining 5.2. The Connection Fixes a Node's Role 5.3. Liveness and Departure
 6. Ordering
 7. Conformance
 8. Security Considerations
@@ -49,7 +41,7 @@ The shape rests on the premise of "a reliable, message-oriented transport" benea
 What this binding fixes is enumerated in the Status of This Memo and detailed in Sections 3–6. What it **defers** is as deliberate, and is of two kinds:
 
 - **Upward, to the binding and its parents.** The operation set, the selectors, the argument layout, directionality, one-way operation, the absence of correlation and response, best-effort relay — all are inherited unchanged (Binding §2). This document restates none of them; it cites them.
-- **Sideways, to the resource document.** A connection under this binding joins exactly one graph, but *which* graph — how the server is addressed, what a connection URL is, whether one server hosts one graph or many, and how a client comes to know the address — is fixed by the *GRS WebSocket Resource* companion (`websocket-resource.md`), not here. This binding owns the **`Sec-WebSocket-Protocol` header and the framing**; the resource document owns the **request URI**. The two never overlap: they are different columns of the same opening handshake. A single-graph deployment reads this document alone.
+- **Sideways, to the resource document.** A connection under this binding joins exactly one graph, but _which_ graph — how the server is addressed, what a connection URL is, whether one server hosts one graph or many, and how a client comes to know the address — is fixed by the _GRS WebSocket Resource_ companion (`websocket-resource.md`), not here. This binding owns the **`Sec-WebSocket-Protocol` header and the framing**; the resource document owns the **request URI**. The two never overlap: they are different columns of the same opening handshake. A single-graph deployment reads this document alone.
 
 ## 3. Subprotocol Negotiation
 
@@ -101,7 +93,7 @@ WebSocket **control frames** — Ping, Pong, and Close (RFC 6455 §5.5) — are 
 
 A WebSocket connection on which this binding has been negotiated (Section 3.2) **is** the node. Completing the opening handshake establishes the caller's node; the server places it in the graph and repairs the graph to keep it strongly connected (Push §3, Choreography §3, Architecture §3). There is no `Join` operation, no session handle, and no establishment message: the connection itself is the node's identity for its lifetime (Push §3).
 
-*Which* graph the node joins is the graph the server associates with this connection; this binding requires only that it be exactly one, and defers the addressing entirely to the resource document (Section 2). Within that one graph, the server SHOULD push the node's initial `NeighborhoodState` as the first `NeighborhoodUpdate` after establishment, so the client begins with a current view (Push §3, §5.3; Choreography §3; Binding §4.3). That initial state MAY be the empty array `[]`, which is well-formed and not an error (Binding §3.3, Relay §2).
+_Which_ graph the node joins is the graph the server associates with this connection; this binding requires only that it be exactly one, and defers the addressing entirely to the resource document (Section 2). Within that one graph, the server SHOULD push the node's initial `NeighborhoodState` as the first `NeighborhoodUpdate` after establishment, so the client begins with a current view (Push §3, §5.3; Choreography §3; Binding §4.3). That initial state MAY be the empty array `[]`, which is well-formed and not an error (Binding §3.3, Relay §2).
 
 By default the server attaches no identity across connections: a client that reconnects establishes a wholly new node (Push §3, Architecture §3.2). Any continuity is constructed above this binding.
 

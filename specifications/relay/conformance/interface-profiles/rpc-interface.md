@@ -2,25 +2,21 @@
 
 ## Status of This Memo
 
-This document is a companion specification to the *Graph Relay System (GRS) Protocol* (`../../architecture.md`) and its *Relay and Neighborhood Semantics* companion (`../../relay-and-neighborhood-semantics.md`). It fixes the **common core** of the GRS remote-procedure interface: the parts that do not depend on how a client and server exchange messages — the abstract data, the semantics of the operations a client invokes on the server, and the two server-owed responsibilities the relay rests on.
+This document is a companion specification to the _Graph Relay System (GRS) Protocol_ (`../../architecture.md`) and its _Relay and Neighborhood Semantics_ companion (`../../relay-and-neighborhood-semantics.md`). It fixes the **common core** of the GRS remote-procedure interface: the parts that do not depend on how a client and server exchange messages — the abstract data, the semantics of the operations a client invokes on the server, and the two server-owed responsibilities the relay rests on.
 
 It deliberately does **not** fix how server-originated events reach a client, nor how a node is established and its departure detected. Those depend on whether the transport can carry server-initiated messages, and they are fixed by one of two companion **profiles**, exactly one of which an implementation adopts:
 
 - **GRS RPC Pull Profile** (`rpc-pull-profile.md`) — for request/response, client-initiated-only transports (e.g. HTTP), where the server cannot push and a session must be synthesized from independent requests.
-- **GRS RPC Pushable Profile** (`rpc-push-profile.md`) — for full-duplex, session-oriented transports (e.g. WebSocket, raw TCP), where the server can push and a connection *is* the session.
+- **GRS RPC Pushable Profile** (`rpc-push-profile.md`) — for full-duplex, session-oriented transports (e.g. WebSocket, raw TCP), where the server can push and a connection _is_ the session.
 
-This document is normative for both profiles. Where the two profiles differ, this core states the *responsibility* and defers the *mechanism* to the profile; a profile MUST fix each such mechanism concretely (it is not left open within a profile). Section references of the form (Architecture §N) point into `../../architecture.md`; (Relay §N) into `../../relay-and-neighborhood-semantics.md`.
+This document is normative for both profiles. Where the two profiles differ, this core states the _responsibility_ and defers the _mechanism_ to the profile; a profile MUST fix each such mechanism concretely (it is not left open within a profile). Section references of the form (Architecture §N) point into `../../architecture.md`; (Relay §N) into `../../relay-and-neighborhood-semantics.md`.
 
 ## Table of Contents
 
 1. Terminology
 2. Interface Model
 3. Abstract Data
-4. Operations and Responsibilities
-   4.1. `Send` (client → server)
-   4.2. Neighborhood State Availability (mechanism deferred to profile)
-   4.3. The Receiving Half of the Relay (mechanism deferred to profile)
-   4.4. Sessions and Node Lifecycle (mechanism deferred to profile)
+4. Operations and Responsibilities 4.1. `Send` (client → server) 4.2. Neighborhood State Availability (mechanism deferred to profile) 4.3. The Receiving Half of the Relay (mechanism deferred to profile) 4.4. Sessions and Node Lifecycle (mechanism deferred to profile)
 5. What a Profile Fixes
 6. Security Considerations
 7. References
@@ -31,7 +27,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 This document uses the terms **Server**, **Client**, **Node**, **out-neighbor**, **in-neighbor**, **neighborhood**, **neighborhood state**, and **Designator** as defined in Architecture §2 and refined in Relay §2.
 
-A **procedure** (or **operation**) is an abstract, named action with a direction, zero or more inputs, and zero or more outputs. A **client-initiated** procedure is invoked by a client and serviced by the server. A **server-originated** event is one whose occurrence the server decides (a relayed message arriving for a node; a neighborhood change). The core defines client-initiated operations and the *requirement* that server-originated events reach the client; a profile fixes the mechanism by which they do.
+A **procedure** (or **operation**) is an abstract, named action with a direction, zero or more inputs, and zero or more outputs. A **client-initiated** procedure is invoked by a client and serviced by the server. A **server-originated** event is one whose occurrence the server decides (a relayed message arriving for a node; a neighborhood change). The core defines client-initiated operations and the _requirement_ that server-originated events reach the client; a profile fixes the mechanism by which they do.
 
 A **session** is the association between a client and the server for the lifetime of one node: it begins when the node is established, identifies the node on every operation, and ends when the node departs. A session is provided by the layer beneath the RPC profile — a native transport connection, or a session layer over a connectionless transport (Section 4.4).
 
@@ -39,7 +35,7 @@ A **profile** is one of the two companion documents above. An implementation MUS
 
 ## 2. Interface Model
 
-A client participates in GRS as a single node (Architecture §3). Every operation in this core is implicitly scoped to *the caller's own node*: no operation takes a "self" node identifier as a parameter, and a client never names itself — only, by designator, its out-neighbors. This keeps the interface aligned with directionality (Architecture §3.1): the only nodes a client can name are its current out-neighbors. *How* the caller's node identity is carried — by the session the operation belongs to, whether a native transport connection or a session synthesized by a session layer — is a profile concern (Section 4.4), but the self-scoping property holds regardless.
+A client participates in GRS as a single node (Architecture §3). Every operation in this core is implicitly scoped to _the caller's own node_: no operation takes a "self" node identifier as a parameter, and a client never names itself — only, by designator, its out-neighbors. This keeps the interface aligned with directionality (Architecture §3.1): the only nodes a client can name are its current out-neighbors. _How_ the caller's node identity is carried — by the session the operation belongs to, whether a native transport connection or a session synthesized by a session layer — is a profile concern (Section 4.4), but the self-scoping property holds regardless.
 
 The interface has exactly two responsibilities, mirroring the two the server owes a client (Architecture §4):
 
@@ -97,7 +93,7 @@ Whichever mechanism a profile fixes, it MUST honor the same invariants this core
 
 A node exists for the duration of a **session** (Section 1): the session establishes the node, the node's identity on every operation is the session it belongs to, and the session's end is the node's departure, after which the graph is repaired (Architecture §3, §4). The server MUST be able to detect that end so it can repair the graph. Crucially, the RPC profile does not itself define how a session begins or ends — it treats session establishment as node creation and session end as departure, and obtains the session from the layer beneath it. What provides that layer depends on the transport, and each profile MUST fix it:
 
-- Where the transport supplies a **persistent connection** (pushable), that connection *is* the session: opening it establishes the node, the connection carries node identity implicitly, and the server detects departure from the connection closing or failing a liveness check. Establishment and teardown are the transport's own (e.g. a TCP handshake and close), so the profile defines no session operations of its own.
+- Where the transport supplies a **persistent connection** (pushable), that connection _is_ the session: opening it establishes the node, the connection carries node identity implicitly, and the server detects departure from the connection closing or failing a liveness check. Establishment and teardown are the transport's own (e.g. a TCP handshake and close), so the profile defines no session operations of its own.
 - Where the transport supplies **no persistent connection** (pull), the session is synthesized by a **session layer** beneath the profile: that layer establishes a session, carries its identity on each request, refreshes its liveness, and tears it down by explicit close or by timeout. The RPC profile layers on that session exactly as the pushable profile layers on a connection, and likewise defines no session operations of its own.
 
 Either way, under the base default the server attaches no identity to a node across its lifetime boundary: a node that departs and a later one that arrives are unrelated, and no session identity, designation, or position carries over (Architecture §3, §3.2). A derived specification MAY instead define a durable node identity that a later session re-binds (Architecture §3); where it does not, identity continuity, if an application needs it, is constructed above this interface.
@@ -111,7 +107,7 @@ Beyond the per-profile mechanisms of Sections 4.3 and 4.4, the following are lef
 - Whether, and how, an acceptance decision (Section 4.1) is surfaced, and whether any discard indication is reported (Relay §4).
 - Ordering of relayed payloads, buffering and retention of pending messages, the fate of messages held for a departing node, and any reliability or deduplication beyond the best-effort floor (Relay §6, §7).
 
-The way this document and its profiles **name** operations and **list** their abstract inputs is itself part of what is left open. An operation's name — `Send`, and those each profile adds (`Deliver`, `NeighborhoodUpdate`, `GetNeighborhood`, `Receive`, and the like) — is a label this specification uses to refer to the operation, not the token that selects it on the wire. The order in which an operation's inputs are listed — for `Send`, a `Designator` then a `Payload` — states *what the operation takes*, not the positions those inputs occupy in any concrete message. A binding (a profile, or a transport binding beneath it) fixes the concrete selector for each operation and the concrete layout of its inputs, and MAY choose both independently of the spelling and listing order used here, provided the operation's semantics (Section 4) are preserved. Nothing in how an operation is named or its inputs are ordered in this document constrains a concrete message shape.
+The way this document and its profiles **name** operations and **list** their abstract inputs is itself part of what is left open. An operation's name — `Send`, and those each profile adds (`Deliver`, `NeighborhoodUpdate`, `GetNeighborhood`, `Receive`, and the like) — is a label this specification uses to refer to the operation, not the token that selects it on the wire. The order in which an operation's inputs are listed — for `Send`, a `Designator` then a `Payload` — states _what the operation takes_, not the positions those inputs occupy in any concrete message. A binding (a profile, or a transport binding beneath it) fixes the concrete selector for each operation and the concrete layout of its inputs, and MAY choose both independently of the spelling and listing order used here, provided the operation's semantics (Section 4) are preserved. Nothing in how an operation is named or its inputs are ordered in this document constrains a concrete message shape.
 
 Clients requiring end-to-end guarantees — reliable delivery, ordering, acknowledgement, identity continuity across sessions, or a reply path to a node with no edge toward them — construct them above this interface (Architecture §3.2), not by expecting them from these operations.
 
@@ -120,7 +116,7 @@ Clients requiring end-to-end guarantees — reliable delivery, ordering, acknowl
 This core inherits the considerations of Architecture §8; each profile adds those specific to how it identifies a node (Section 4.4).
 
 - **Self-scoping is authority.** Because every operation is scoped to the caller's own node (Section 2) and no operation accepts a "self" identifier, a client cannot name or act as another node merely by argument. A profile MUST ensure a caller can invoke operations only as its own node, so that `Send` cannot be issued on behalf of, and the receiving half cannot be redirected to, a node other than the caller's own. The means by which a profile binds a caller to a node — a transport connection, or a session-layer session — is therefore security-critical (Section 4.4).
-- **Resolution is against the current neighborhood.** A profile MUST resolve a `Send` designator against the sending node's *current* neighborhood, so that a designator which does not denote a current out-neighbor — whether stale, guessed, or malformed — yields discard, never misdelivery (Relay §3, §4) and never reach to a non-neighbor. Designators are therefore not capabilities: holding or guessing one grants nothing beyond what the caller's current neighborhood already allows.
+- **Resolution is against the current neighborhood.** A profile MUST resolve a `Send` designator against the sending node's _current_ neighborhood, so that a designator which does not denote a current out-neighbor — whether stale, guessed, or malformed — yields discard, never misdelivery (Relay §3, §4) and never reach to a non-neighbor. Designators are therefore not capabilities: holding or guessing one grants nothing beyond what the caller's current neighborhood already allows.
 - **Acceptance is not delivery.** Because `Send` may surface an acceptance decision (Section 4.1), implementers and clients MUST NOT treat it as a delivery signal; doing so would reintroduce a guarantee the relay explicitly disclaims (Relay §6).
 - **Confidentiality.** Every payload traverses the server (Architecture §8); this interface provides no end-to-end confidentiality. Clients requiring it encrypt within `Payload`, above this interface.
 
